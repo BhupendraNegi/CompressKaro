@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { Suspense, useMemo, useRef, useState } from 'react';
 import type { OptionValues, ToolConfig, ToolOutput } from '../../tools/types';
 import { runTool } from '../../lib/workers/client';
 import { friendlyError } from '../../lib/errors';
@@ -6,6 +6,7 @@ import { formatSize } from '../../lib/files';
 import { acceptHint, copy } from '../../lib/copy';
 import { FileList } from './FileList';
 import { OptionsPanel } from './OptionsPanel';
+import { toolPanels } from './toolPanels';
 
 type Phase = 'empty' | 'ready' | 'processing' | 'done' | 'error';
 
@@ -140,6 +141,20 @@ export function ToolShell({ config }: Props) {
             }}
             onAddMore={openPicker}
           />
+          {(() => {
+            const panel = toolPanels[config.slug];
+            if (!panel || !files[0]) return null;
+            const Panel = panel.component;
+            return (
+              <Suspense fallback={<p className="m-0 py-4 text-center text-[13px] text-mute">Loading previews…</p>}>
+                <Panel
+                  file={files[0]}
+                  value={String(values[panel.optionKey] ?? '')}
+                  onChange={(v) => setValues({ ...values, [panel.optionKey]: v })}
+                />
+              </Suspense>
+            );
+          })()}
           {config.options.length > 0 && (
             <OptionsPanel options={config.options} values={values} onChange={(k, v) => setValues({ ...values, [k]: v })} />
           )}

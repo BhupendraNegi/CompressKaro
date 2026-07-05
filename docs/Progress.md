@@ -120,11 +120,36 @@ Verify gate:
 - [x] Dev server: `/merge-pdf/` serves astro-island + dropzone markup
 - [x] e2e written: merge → download → page count assert; corrupt-file friendly error; compress 1600×1200 noise photo → ≤ 50 KB download (OffscreenCanvas needs a real browser → runs in CI)
 
-## Phase 3 — PDF page infra + high-traffic tools ⬜
+## Phase 3 — PDF page infra + high-traffic tools ✅ (local gates 2026-07-05)
 
-- [ ] pdfjs viewer + PdfPagePicker (thumbnails, selection, zoom)
-- [ ] Compress PDF · Split PDF (zip) · Images to PDF · Reorder Pages
-- [ ] Verify: per-tool e2e; real size reduction shown; split ranges → correct page counts
+Path taken:
+- **Shared PDF infra:** `lib/pdf/ranges.ts` (range + order parsers, friendly errors),
+  `lib/pdf/render.ts` (pdfjs → OffscreenCanvas → JPEG rasterizer, worker-safe, keeps original
+  page dimensions in points), `lib/zip.ts` (fflate).
+- **PdfPagePicker** React panel: pdfjs thumbnails on the main thread, drag-to-reorder +
+  arrow buttons, emits the same "3, 1, 2" text the order option accepts (graceful fallback if
+  previews fail). Wired via a lazy `toolPanels` map so pdfjs only loads on tools that use it
+  (verified: separate `PdfPagePicker` + `pdf.worker` chunks in the build).
+- **Split PDF**: ranges → one PDF each → zip; blank input = every page separately.
+- **Reorder Pages**: thumbnails or typed order; unmentioned pages append in original order.
+- **Compress PDF**: re-render each page via pdfjs at level-based scale/quality
+  (Light 1.5×/0.75 · Balanced 1.2×/0.6 · Strong 1.0×/0.45), rebuild with pdf-lib at true page
+  size; target-KB mode retries lower settings up to 3× and keeps the smallest.
+- **Images to PDF**: JPG/PNG embed directly, WebP re-encoded in-worker; A4/Letter with margins +
+  auto/forced orientation, or "Fit image" pages; single input names output after the file.
+- SEO steps + FAQs shipped for all four; `liveTools` now 6.
+
+Decisions:
+- **Dropped jsPDF** — pdf-lib covers images→PDF; one less dependency.
+- Compress PDF makes pages non-selectable images (the honest trade-off for real size cuts) —
+  stated plainly in the tool's FAQ.
+
+Verify gate:
+- [x] `bin/test` green — 23 tests; real engines exercised in Node: split zip contents + page
+      counts, reorder verified by distinct page sizes, images-to-pdf page count/size, parsers
+- [x] `bin/lint` clean; build 32 pages, pdfjs code-split, islands on all 4 new tool pages
+- [x] e2e written for all four (split zip download, compress page-count round-trip, reorder with
+      thumbnail render check, images-to-pdf from generated canvases) — run in CI
 
 ## Phase 4 — Page-operation tools ⬜
 

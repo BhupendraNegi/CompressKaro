@@ -10,6 +10,10 @@ import type { WorkerRequest, WorkerResponse } from './protocol';
 const processors: Record<string, () => Promise<{ process: ProcessFn }>> = {
   'merge-pdf': () => import('../../tools/merge-pdf/process'),
   'compress-image': () => import('../../tools/compress-image/process'),
+  'split-pdf': () => import('../../tools/split-pdf/process'),
+  'reorder-pdf': () => import('../../tools/reorder-pdf/process'),
+  'compress-pdf': () => import('../../tools/compress-pdf/process'),
+  'images-to-pdf': () => import('../../tools/images-to-pdf/process'),
 };
 
 const reply = (msg: WorkerResponse) => self.postMessage(msg);

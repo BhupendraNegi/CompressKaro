@@ -59,10 +59,36 @@ export const tools: ToolConfig[] = [
       { q: 'Can I change the page order?', a: 'Yes — drag files up and down in the list (or use the arrow buttons) before merging. Files combine top to bottom.' },
     ],
   },
-  tool({ slug: 'split-pdf', name: 'Split PDF', desc: 'Split by page ranges into separate files', category: 'organize', icon: 'split', verb: 'Split',
-    options: [txt('ranges', 'Page ranges', 'e.g. 1-3, 5, 8-10', 'Each range becomes a separate PDF.')] }),
-  tool({ slug: 'reorder-pdf', name: 'Reorder Pages', desc: 'Rearrange pages in any order', category: 'organize', icon: 'pages', verb: 'Reorder',
-    options: [txt('order', 'New page order', 'e.g. 3, 1, 2, 4', 'Leave blank to reorder visually after upload.')] }),
+  {
+    ...tool({ slug: 'split-pdf', name: 'Split PDF', desc: 'Split by page ranges into separate files', category: 'organize', icon: 'split', verb: 'Split',
+      options: [txt('ranges', 'Page ranges', 'e.g. 1-3, 5, 8-10', 'Each range becomes a separate PDF. Leave blank to export every page separately.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Type the page ranges you want, like “1-3, 5, 8-10” — or leave blank to split every page.',
+      'Hit “Split Karo”. Everything happens on your device.',
+      'Download a zip with one PDF per range.',
+    ],
+    faqs: [
+      { q: 'How do I write page ranges?', a: 'Comma-separated: “1-3, 5, 8-10” makes three PDFs — pages 1 to 3, page 5, and pages 8 to 10. Leave the field blank to export every page as its own PDF.' },
+      { q: 'What do I get as output?', a: 'A single zip file containing one PDF per range, named after the original file and the pages inside.' },
+      { q: 'Is my PDF uploaded while splitting?', a: 'No — the split and even the zip are created entirely in your browser. Nothing leaves your device.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'reorder-pdf', name: 'Reorder Pages', desc: 'Rearrange pages in any order', category: 'organize', icon: 'pages', verb: 'Reorder',
+      options: [txt('order', 'New page order', 'e.g. 3, 1, 2, 4', 'Drag the page thumbnails above, or type the order here.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Drag the page thumbnails into the order you want (or type it, like “3, 1, 2”).',
+      'Hit “Reorder Karo” — pages you don’t mention keep their original order.',
+      'Download the rearranged PDF.',
+    ],
+    faqs: [
+      { q: 'Do I have to list every page?', a: 'No. Pages you don’t mention are appended after the ones you do, keeping their original order.' },
+      { q: 'Can I see the pages before reordering?', a: 'Yes — page thumbnails render right in the tool and you drag them into the new order.' },
+      { q: 'Does reordering change the page content?', a: 'No, pages are copied exactly as they are — only their order changes.' },
+    ],
+  },
   tool({ slug: 'extract-pdf', name: 'Extract Pages', desc: 'Pull selected pages into a new PDF', category: 'organize', icon: 'extract', verb: 'Extract',
     options: [txt('pages', 'Pages to extract', 'e.g. 1, 4-6')] }),
   tool({ slug: 'delete-pdf', name: 'Delete Pages', desc: 'Remove unwanted pages from a PDF', category: 'organize', icon: 'del', verb: 'Delete',
@@ -73,8 +99,22 @@ export const tools: ToolConfig[] = [
     options: [choice('scope', 'Apply to', ['All pages', 'Current page']), slider('margin', 'Trim margin', 0, 50, 10, ' mm')] }),
 
   // ── PDF · Convert & Create ─────────────────────────────────────────────────
-  tool({ slug: 'images-to-pdf', name: 'Images to PDF', desc: 'Turn JPG, PNG or WebP into one PDF', category: 'convert', icon: 'img', verb: 'Convert', multi: true, accept: 'image/*',
-    options: [choice('size', 'Page size', ['A4', 'Letter', 'Fit image']), choice('orient', 'Orientation', ['Auto', 'Portrait', 'Landscape'])] }),
+  {
+    ...tool({ slug: 'images-to-pdf', name: 'Images to PDF', desc: 'Turn JPG, PNG or WebP into one PDF', category: 'convert', icon: 'img', verb: 'Convert', multi: true, accept: 'image/*',
+      options: [choice('size', 'Page size', ['A4', 'Letter', 'Fit image']), choice('orient', 'Orientation', ['Auto', 'Portrait', 'Landscape'])] }),
+    steps: [
+      'Drop your images (JPG, PNG or WebP) into the box above.',
+      'Drag them into the page order you want.',
+      'Pick a page size — A4, Letter, or pages fitted to each image.',
+      'Hit “Convert Karo” and download one combined PDF.',
+    ],
+    faqs: [
+      { q: 'How many images can I combine?', a: 'Up to 25 images become one PDF, one image per page, in the order you arrange them.' },
+      { q: 'What does “Fit image” do?', a: 'Each PDF page takes the exact dimensions of its image — no margins, no whitespace.' },
+      { q: 'Are WebP images supported?', a: 'Yes. WebP images are converted on your device before being placed into the PDF.' },
+      { q: 'Do my photos get uploaded?', a: 'Never — the PDF is assembled entirely in your browser.' },
+    ],
+  },
   tool({ slug: 'pdf-to-images', name: 'PDF to Images', desc: 'Export every page as PNG or JPG', category: 'convert', icon: 'img', verb: 'Convert',
     options: [choice('fmt', 'Format', ['PNG', 'JPG']), slider('q', 'Quality', 10, 100, 90, '%')] }),
   tool({ slug: 'pdf-to-text', name: 'PDF to Text', desc: 'Extract all text from a PDF', category: 'convert', icon: 'text', verb: 'Extract',
@@ -83,8 +123,22 @@ export const tools: ToolConfig[] = [
     options: [txt('title', 'Document title', 'Untitled document'), choice('size', 'Page size', ['A4', 'Letter'])] }),
 
   // ── PDF · Optimize & Security ──────────────────────────────────────────────
-  tool({ slug: 'compress-pdf', name: 'Compress PDF', desc: 'Shrink file size, keep the quality', category: 'optimize', icon: 'compress', verb: 'Compress',
-    options: [slider('level', 'Compression level', 1, 3, 2, '', 'Higher = smaller file, softer images.', ['Light', 'Balanced', 'Strong']), num('target', 'Target size (optional)', 'e.g. 500', 'KB', 'We’ll get as close as possible.')] }),
+  {
+    ...tool({ slug: 'compress-pdf', name: 'Compress PDF', desc: 'Shrink file size, keep the quality', category: 'optimize', icon: 'compress', verb: 'Compress',
+      options: [slider('level', 'Compression level', 1, 3, 2, '', 'Higher = smaller file, softer images.', ['Light', 'Balanced', 'Strong']), num('target', 'Target size (optional)', 'e.g. 500', 'KB', 'We’ll get as close as possible.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Choose a level: Light, Balanced or Strong — or set a target size in KB.',
+      'Hit “Compress Karo”. Pages are re-rendered at reduced quality on your device.',
+      'Compare the before/after size and download.',
+    ],
+    faqs: [
+      { q: 'How does the compression work?', a: 'Every page is re-rendered as an optimized image at reduced quality and resolution — the same trick print-to-PDF uses. Text-heavy PDFs stay readable; image-heavy PDFs shrink the most.' },
+      { q: 'Will my text still be selectable?', a: 'No — compressed pages become images, so text can no longer be selected or searched. That trade-off is what makes the big size cuts possible.' },
+      { q: 'What if the result is larger than my target?', a: 'We retry at lower quality and resolution up to three times and keep the smallest result. Some PDFs simply can’t go lower without becoming unreadable.' },
+      { q: 'Is my PDF uploaded to compress it?', a: 'No. Rendering and rebuilding happen 100% in your browser.' },
+    ],
+  },
   tool({ slug: 'protect-pdf', name: 'Protect PDF', desc: 'Add password encryption', category: 'optimize', icon: 'lock', verb: 'Protect',
     options: [txt('pw', 'Password', 'Choose a strong password', undefined, 'password'), txt('pw2', 'Confirm password', 'Type it again', undefined, 'password')] }),
   tool({ slug: 'unlock-pdf', name: 'Unlock PDF', desc: 'Remove a password you know', category: 'optimize', icon: 'unlock', verb: 'Unlock',
@@ -141,7 +195,14 @@ export const tools: ToolConfig[] = [
 
 /** Slugs of tools whose processing is implemented; others render "coming soon".
  *  Keep in sync with the processor map in src/lib/workers/worker.ts. */
-export const liveTools = new Set<string>(['merge-pdf', 'compress-image']);
+export const liveTools = new Set<string>([
+  'merge-pdf',
+  'compress-image',
+  'split-pdf',
+  'reorder-pdf',
+  'compress-pdf',
+  'images-to-pdf',
+]);
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);
 
