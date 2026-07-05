@@ -89,11 +89,36 @@ Verify gate:
 - [x] e2e specs written (search filter, theme persistence, card→tool page, footer links) — run in CI
 - [ ] Lighthouse SEO ≥ 95 — measure after first Pages deploy
 
-## Phase 2 — ToolShell + Merge PDF + Compress Image ⬜
+## Phase 2 — ToolShell + Merge PDF + Compress Image ✅ (local gates 2026-07-05)
 
-- [ ] ToolShell island: empty → ready → processing → done; options-schema renderer; worker protocol
-- [ ] Merge PDF (multi, drag-reorder, 25 cap) · Compress Image (quality + target-KB loop)
-- [ ] Verify: e2e — merge two fixture PDFs → `merged.pdf`; compress fixture under target KB
+Path taken:
+- **ToolShell island** (`components/react/ToolShell.tsx` + FileList + OptionsPanel): the full
+  empty → ready → processing → done/error flow from the design, options-schema renderer
+  (slider w/ label maps, number+unit, text/password, choice pills), keyboard-operable dropzone,
+  aria-live status, before/after sizes in the done note, multi-output download list.
+- **Worker pipeline**: typed protocol (`lib/workers/protocol.ts`), per-run worker
+  (`client.ts`), processor map with dynamic imports so each tool's engine code-splits
+  (`worker.ts`). Needed `vite.worker.format = 'es'` — IIFE workers can't multi-chunk.
+- **Merge PDF**: pdf-lib copyPages in list order, per-file progress. **Compress Image**:
+  hand-rolled OffscreenCanvas engine (`lib/image/compress.ts`) — binary-search JPEG quality for
+  target-KB, dimension downscale fallback; dropped `browser-image-compression` (decision below).
+- File reorder: native HTML5 drag + up/down arrow buttons (keyboard/mobile), matching the
+  prototype; dnd-kit deferred until PdfPagePicker needs it.
+- Hinglish copy centralized in `lib/copy.ts`; friendly error mapping in `lib/errors.ts`.
+- SEO steps + FAQs (FAQPage JSON-LD) shipped for both live tools; `liveTools` set gates the island.
+
+Decisions:
+- Compress Image always outputs **JPEG** (`{base}-compressed.jpg`, transparency flattened to
+  white) — matches the prototype's naming contract; predictable results.
+- Skipped `browser-image-compression`: it self-spawns workers/uses DOM canvas — our engine already
+  runs in a worker; OffscreenCanvas gives the exact target-KB loop with zero deps.
+- "Try a sample" dropzone link deferred to Phase 3 (needs bundled fixture files).
+
+Verify gate:
+- [x] `bin/test` green — 11 tests incl. **real merge engine** (2+3 pages → 5-page merged.pdf, corrupt-input rejection) via Node 22's File/Blob
+- [x] `bin/lint` clean; build 32 pages + code-split worker chunk (`_astro/worker-*.js`)
+- [x] Dev server: `/merge-pdf/` serves astro-island + dropzone markup
+- [x] e2e written: merge → download → page count assert; corrupt-file friendly error; compress 1600×1200 noise photo → ≤ 50 KB download (OffscreenCanvas needs a real browser → runs in CI)
 
 ## Phase 3 — PDF page infra + high-traffic tools ⬜
 

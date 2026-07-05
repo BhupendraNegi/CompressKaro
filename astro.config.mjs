@@ -12,5 +12,8 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    // The processing worker code-splits per tool (dynamic imports), which
+    // requires ES-module workers instead of Vite's default IIFE bundle.
+    worker: { format: 'es' },
   },
 });

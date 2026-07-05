@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/astro/Icon.astro';
 import TrustChips from '../components/astro/TrustChips.astro';
+import { ToolShell } from '../components/react/ToolShell';
 import { liveTools, tools } from '../tools/registry';
 import type { ToolConfig } from '../tools/types';
 
@@ -59,7 +60,7 @@ const faqJsonLd =
 
       {
         isLive ? (
-          <p class="text-mute">ToolShell mounts here (Phase 2).</p>
+          <ToolShell client:load config={tool} />
         ) : (
           <div class="mt-1.5 rounded-[20px] border-2 border-dashed border-line bg-surface px-6 py-14 text-center">
             <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] bg-accent-soft text-accent">

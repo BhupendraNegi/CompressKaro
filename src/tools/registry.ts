@@ -7,8 +7,8 @@ import type { ToolCategory, ToolConfig, ToolOption } from './types';
  * that implements them; until then the page renders a "coming soon" state.
  */
 
-const slider = (key: string, label: string, min: number, max: number, def: number, unit = '', hint?: string): ToolOption =>
-  ({ type: 'slider', key, label, min, max, step: 1, def, unit, hint });
+const slider = (key: string, label: string, min: number, max: number, def: number, unit = '', hint?: string, labels?: string[]): ToolOption =>
+  ({ type: 'slider', key, label, min, max, step: 1, def, unit, hint, labels });
 const num = (key: string, label: string, placeholder: string, unit: string, hint?: string): ToolOption =>
   ({ type: 'number', key, label, placeholder, unit, hint });
 const txt = (key: string, label: string, placeholder: string, hint?: string, inputType: 'text' | 'password' = 'text'): ToolOption =>
@@ -44,7 +44,21 @@ const tool = (seed: ToolSeed): ToolConfig => ({
 
 export const tools: ToolConfig[] = [
   // ── PDF · Organize ─────────────────────────────────────────────────────────
-  tool({ slug: 'merge-pdf', name: 'Merge PDF', desc: 'Combine up to 25 PDFs into one file', category: 'organize', icon: 'merge', verb: 'Merge', multi: true, maxFiles: 25 }),
+  {
+    ...tool({ slug: 'merge-pdf', name: 'Merge PDF', desc: 'Combine up to 25 PDFs into one file', category: 'organize', icon: 'merge', verb: 'Merge', multi: true, maxFiles: 25 }),
+    steps: [
+      'Drop up to 25 PDF files into the box above, or tap to browse.',
+      'Drag the files into the order you want — they merge top to bottom.',
+      'Hit “Merge Karo” and watch it work, right on your device.',
+      'Download your single, combined PDF. Done!',
+    ],
+    faqs: [
+      { q: 'Is there a limit on how many PDFs I can merge?', a: 'You can merge up to 25 PDFs at once. There is no size limit beyond your device’s memory.' },
+      { q: 'Are my PDFs uploaded to a server?', a: 'No. The merge happens entirely in your browser using JavaScript — your files never leave your device.' },
+      { q: 'Will the merged PDF keep my formatting?', a: 'Yes. Pages are copied as-is, so fonts, images and layout stay exactly as they were in the originals.' },
+      { q: 'Can I change the page order?', a: 'Yes — drag files up and down in the list (or use the arrow buttons) before merging. Files combine top to bottom.' },
+    ],
+  },
   tool({ slug: 'split-pdf', name: 'Split PDF', desc: 'Split by page ranges into separate files', category: 'organize', icon: 'split', verb: 'Split',
     options: [txt('ranges', 'Page ranges', 'e.g. 1-3, 5, 8-10', 'Each range becomes a separate PDF.')] }),
   tool({ slug: 'reorder-pdf', name: 'Reorder Pages', desc: 'Rearrange pages in any order', category: 'organize', icon: 'pages', verb: 'Reorder',
@@ -70,7 +84,7 @@ export const tools: ToolConfig[] = [
 
   // ── PDF · Optimize & Security ──────────────────────────────────────────────
   tool({ slug: 'compress-pdf', name: 'Compress PDF', desc: 'Shrink file size, keep the quality', category: 'optimize', icon: 'compress', verb: 'Compress',
-    options: [slider('level', 'Compression level', 1, 3, 2, '', 'Higher = smaller file, softer images.'), num('target', 'Target size (optional)', 'e.g. 500', 'KB', 'We’ll get as close as possible.')] }),
+    options: [slider('level', 'Compression level', 1, 3, 2, '', 'Higher = smaller file, softer images.', ['Light', 'Balanced', 'Strong']), num('target', 'Target size (optional)', 'e.g. 500', 'KB', 'We’ll get as close as possible.')] }),
   tool({ slug: 'protect-pdf', name: 'Protect PDF', desc: 'Add password encryption', category: 'optimize', icon: 'lock', verb: 'Protect',
     options: [txt('pw', 'Password', 'Choose a strong password', undefined, 'password'), txt('pw2', 'Confirm password', 'Type it again', undefined, 'password')] }),
   tool({ slug: 'unlock-pdf', name: 'Unlock PDF', desc: 'Remove a password you know', category: 'optimize', icon: 'unlock', verb: 'Unlock',
@@ -91,8 +105,22 @@ export const tools: ToolConfig[] = [
     options: [txt('h', 'Header text', 'e.g. Q2 Report — Draft'), txt('f', 'Footer text', 'e.g. © 2026 Acme Pvt Ltd')] }),
 
   // ── Image tools ────────────────────────────────────────────────────────────
-  tool({ slug: 'compress-image', name: 'Compress Image', desc: 'Shrink JPG, PNG or WebP files', category: 'image', icon: 'compress', verb: 'Compress', multi: true, accept: 'image/*',
-    options: [slider('q', 'Quality', 10, 100, 75, '%', 'Lower quality = smaller file.'), num('target', 'Target size (optional)', 'e.g. 200', 'KB')] }),
+  {
+    ...tool({ slug: 'compress-image', name: 'Compress Image', desc: 'Shrink JPG, PNG or WebP files', category: 'image', icon: 'compress', verb: 'Compress', multi: true, accept: 'image/*',
+      options: [slider('q', 'Quality', 10, 100, 75, '%', 'Lower quality = smaller file.'), num('target', 'Target size (optional)', 'e.g. 200', 'KB', 'We’ll compress until the file is at or under this size.')] }),
+    steps: [
+      'Drop one or more JPG, PNG or WebP images into the box above.',
+      'Pick a quality level — or set a target size in KB and we’ll hit it.',
+      'Hit “Compress Karo”. The work happens on your device, never on a server.',
+      'Download your smaller images. Ho gaya!',
+    ],
+    faqs: [
+      { q: 'How does the target size mode work?', a: 'We repeatedly re-encode the image at different quality levels (and, if needed, smaller dimensions) until it fits at or under your target KB — all locally in your browser.' },
+      { q: 'Are my photos uploaded anywhere?', a: 'Never. Compression runs 100% in your browser. Your photos stay on your device.' },
+      { q: 'What format is the output?', a: 'Compressed images are saved as JPG — the most compatible format for small file sizes. Transparent areas are flattened onto white.' },
+      { q: 'Can I compress many images at once?', a: 'Yes — drop in multiple images and each one is compressed with the same settings.' },
+    ],
+  },
   tool({ slug: 'resize-image', name: 'Resize Image', desc: 'Scale to exact pixel dimensions', category: 'image', icon: 'resize', verb: 'Resize', accept: 'image/*',
     options: [num('w', 'Width', 'e.g. 1200', 'px'), num('h', 'Height', 'auto', 'px', 'Leave blank to keep aspect ratio.')] }),
   tool({ slug: 'convert-image', name: 'Convert Image', desc: 'Switch between JPG, PNG and WebP', category: 'image', icon: 'convert', verb: 'Convert', multi: true, accept: 'image/*',
@@ -111,8 +139,9 @@ export const tools: ToolConfig[] = [
     options: [slider('q', 'Quality', 10, 100, 75, '%'), num('maxw', 'Max width (optional)', 'e.g. 1920', 'px'), choice('fmt', 'Format', ['Keep original', 'JPG', 'WebP'])] }),
 ];
 
-/** Slugs of tools whose processing is implemented; others render "coming soon". */
-export const liveTools = new Set<string>([]);
+/** Slugs of tools whose processing is implemented; others render "coming soon".
+ *  Keep in sync with the processor map in src/lib/workers/worker.ts. */
+export const liveTools = new Set<string>(['merge-pdf', 'compress-image']);
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);
 

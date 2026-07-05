@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatSize } from './files';
+import { baseName, formatSize } from './files';
 
 describe('formatSize', () => {
   it('formats megabytes to one decimal', () => {
@@ -13,5 +13,13 @@ describe('formatSize', () => {
 
   it('never shows 0 KB for tiny files', () => {
     expect(formatSize(1)).toBe('1 KB');
+  });
+});
+
+describe('baseName', () => {
+  it('strips only the final extension', () => {
+    expect(baseName('report.pdf')).toBe('report');
+    expect(baseName('archive.v2.final.pdf')).toBe('archive.v2.final');
+    expect(baseName('no-extension')).toBe('no-extension');
   });
 });

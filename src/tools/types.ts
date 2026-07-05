@@ -7,7 +7,7 @@
 export type ToolCategory = 'organize' | 'convert' | 'optimize' | 'annotate' | 'image';
 
 export type ToolOption =
-  | { type: 'slider'; key: string; label: string; min: number; max: number; step: number; def: number; unit?: string; hint?: string }
+  | { type: 'slider'; key: string; label: string; min: number; max: number; step: number; def: number; unit?: string; hint?: string; labels?: string[] }
   | { type: 'number'; key: string; label: string; placeholder?: string; unit?: string; def?: number; hint?: string }
   | { type: 'text'; key: string; label: string; placeholder?: string; def?: string; hint?: string; inputType?: 'text' | 'password' }
   | { type: 'choice'; key: string; label: string; choices: string[]; def?: string; hint?: string };
@@ -55,10 +55,11 @@ export interface ToolOutput {
 
 /**
  * A tool's processing function. Pure (no React/DOM rendering), runs inside a
- * Web Worker, reports honest progress via onProgress.
+ * Web Worker, reports honest progress via onProgress. Returns one output per
+ * downloadable file (usually one; multi-input image tools return several).
  */
 export type ProcessFn = (
   files: File[],
   options: OptionValues,
   onProgress: ProgressFn,
-) => Promise<ToolOutput>;
+) => Promise<ToolOutput[]>;
