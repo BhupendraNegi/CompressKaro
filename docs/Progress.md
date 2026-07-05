@@ -151,10 +151,30 @@ Verify gate:
 - [x] e2e written for all four (split zip download, compress page-count round-trip, reorder with
       thumbnail render check, images-to-pdf from generated canvases) — run in CI
 
-## Phase 4 — Page-operation tools ⬜
+## Phase 4 — Page-operation tools ✅ (local gates 2026-07-05)
 
-- [ ] Rotate PDF · Delete Pages · Extract Pages · Crop PDF (crop-box UI)
-- [ ] Verify: e2e per tool; crop coordinates unit-tested against output dimensions
+Path taken:
+- **PdfPagePicker gained a `select` mode** — click thumbnails to toggle pages; the selection
+  writes into the tool's `pages` text option so thumbnails and typed input stay in sync
+  (aria-pressed on each page button). `toolPanels` entries now carry `mode`.
+- `parsePages` added to `lib/pdf/ranges.ts` ("2, 7-9" → flat sorted 0-based indices).
+- **Rotate PDF** (angle on all/selected, additive to existing rotation), **Delete Pages**
+  (refuses to delete all; requires a selection), **Extract Pages** (requires a selection),
+  **Crop PDF** (even mm trim via crop box, per-page bounds check).
+- Registry: rotate/crop `scope` choices replaced by the shared pages selection (blank = all);
+  SEO steps + FAQs for all four; `liveTools` now 10.
+
+Decisions:
+- Crop v1 = **even margin trim** (matches the prototype's slider); a draw-your-own crop box
+  needs the Phase 6 overlay infra and is deferred there (also stated in the tool FAQ).
+- Crop sets the **crop box** (non-destructive, viewers respect it) rather than re-rendering.
+
+Verify gate:
+- [x] `bin/test` green — 32 tests: rotation per-page angles, delete order/refusals, extract
+      subsets, crop-box mm→pt coordinates + too-big-margin rejection, parsePages
+- [x] `bin/lint` clean; build green, islands on all 4 pages
+- [x] e2e: thumbnail-click selection → only page 2 rotated (asserts real output angles);
+      typed delete selection → page count — run in CI
 
 ## Phase 5 — Convert & image suite ⬜
 

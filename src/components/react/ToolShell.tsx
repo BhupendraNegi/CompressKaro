@@ -151,6 +151,7 @@ export function ToolShell({ config }: Props) {
                   file={files[0]}
                   value={String(values[panel.optionKey] ?? '')}
                   onChange={(v) => setValues({ ...values, [panel.optionKey]: v })}
+                  mode={panel.mode}
                 />
               </Suspense>
             );

@@ -89,14 +89,66 @@ export const tools: ToolConfig[] = [
       { q: 'Does reordering change the page content?', a: 'No, pages are copied exactly as they are — only their order changes.' },
     ],
   },
-  tool({ slug: 'extract-pdf', name: 'Extract Pages', desc: 'Pull selected pages into a new PDF', category: 'organize', icon: 'extract', verb: 'Extract',
-    options: [txt('pages', 'Pages to extract', 'e.g. 1, 4-6')] }),
-  tool({ slug: 'delete-pdf', name: 'Delete Pages', desc: 'Remove unwanted pages from a PDF', category: 'organize', icon: 'del', verb: 'Delete',
-    options: [txt('pages', 'Pages to delete', 'e.g. 2, 7-9')] }),
-  tool({ slug: 'rotate-pdf', name: 'Rotate PDF', desc: 'Rotate pages by 90°, 180° or 270°', category: 'organize', icon: 'rotate', verb: 'Rotate',
-    options: [choice('angle', 'Rotation', ['90° right', '180°', '90° left']), choice('scope', 'Apply to', ['All pages', 'Selected pages'])] }),
-  tool({ slug: 'crop-pdf', name: 'Crop PDF', desc: 'Trim margins on every page', category: 'organize', icon: 'crop', verb: 'Crop',
-    options: [choice('scope', 'Apply to', ['All pages', 'Current page']), slider('margin', 'Trim margin', 0, 50, 10, ' mm')] }),
+  {
+    ...tool({ slug: 'extract-pdf', name: 'Extract Pages', desc: 'Pull selected pages into a new PDF', category: 'organize', icon: 'extract', verb: 'Extract',
+      options: [txt('pages', 'Pages to extract', 'e.g. 1, 4-6', 'Click the thumbnails above, or type page numbers and ranges.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Click the page thumbnails you want (or type them, like “1, 4-6”).',
+      'Hit “Extract Karo”.',
+      'Download a new PDF containing just those pages.',
+    ],
+    faqs: [
+      { q: 'Does extracting change my original PDF?', a: 'No — your original file is untouched. You get a brand-new PDF with copies of the pages you picked.' },
+      { q: 'Can I extract pages in a different order?', a: 'Extracted pages keep their original order. To change the order, run the result through the Reorder Pages tool.' },
+      { q: 'Is my document uploaded?', a: 'No — extraction happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'delete-pdf', name: 'Delete Pages', desc: 'Remove unwanted pages from a PDF', category: 'organize', icon: 'del', verb: 'Delete',
+      options: [txt('pages', 'Pages to delete', 'e.g. 2, 7-9', 'Click the thumbnails above, or type page numbers and ranges.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Click the thumbnails of the pages you want gone (or type them, like “2, 7-9”).',
+      'Hit “Delete Karo”.',
+      'Download the PDF without those pages.',
+    ],
+    faqs: [
+      { q: 'Can I undo a deletion?', a: 'Your original file is never modified, so just start over from it if you deleted the wrong pages.' },
+      { q: 'Can I delete every page?', a: 'No — at least one page must remain, and the tool will tell you if you try.' },
+      { q: 'Is the file uploaded to delete pages?', a: 'No — everything happens locally in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'rotate-pdf', name: 'Rotate PDF', desc: 'Rotate pages by 90°, 180° or 270°', category: 'organize', icon: 'rotate', verb: 'Rotate',
+      options: [choice('angle', 'Rotation', ['90° right', '180°', '90° left']), txt('pages', 'Pages (optional)', 'blank = all pages', 'Click thumbnails to rotate only specific pages.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Pick the rotation: 90° right, 180°, or 90° left.',
+      'Leave the pages field blank to rotate everything, or click thumbnails for specific pages.',
+      'Hit “Rotate Karo” and download.',
+    ],
+    faqs: [
+      { q: 'Can I rotate just one page?', a: 'Yes — click that page’s thumbnail (or type its number) and only it will rotate.' },
+      { q: 'Does rotating reduce quality?', a: 'No. Rotation only changes the page’s display orientation — the content is untouched.' },
+      { q: 'Is my PDF uploaded to rotate it?', a: 'No — rotation happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'crop-pdf', name: 'Crop PDF', desc: 'Trim margins on every page', category: 'organize', icon: 'crop', verb: 'Crop',
+      options: [slider('margin', 'Trim margin', 0, 50, 10, ' mm', 'An even trim off all four edges.'), txt('pages', 'Pages (optional)', 'blank = all pages', 'Click thumbnails to crop only specific pages.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Set how many millimetres to trim off every edge.',
+      'Leave pages blank to crop all of them, or pick specific pages.',
+      'Hit “Crop Karo” and download.',
+    ],
+    faqs: [
+      { q: 'Is cropping destructive?', a: 'No — we set the page’s crop box, which tells viewers what to display. The full content is still in the file, and the trim can be undone by resetting the crop box.' },
+      { q: 'Can I crop different amounts per edge?', a: 'Not yet — this tool trims an even margin from all four edges. A draw-your-own crop box is on the roadmap.' },
+      { q: 'Is my PDF uploaded to crop it?', a: 'No — cropping happens entirely in your browser.' },
+    ],
+  },
 
   // ── PDF · Convert & Create ─────────────────────────────────────────────────
   {
@@ -202,6 +254,10 @@ export const liveTools = new Set<string>([
   'reorder-pdf',
   'compress-pdf',
   'images-to-pdf',
+  'rotate-pdf',
+  'delete-pdf',
+  'extract-pdf',
+  'crop-pdf',
 ]);
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);

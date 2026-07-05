@@ -26,6 +26,17 @@ export function parseRanges(input: string, pageCount: number): number[][] {
 }
 
 /**
+ * Parse "2, 7-9" into a flat, sorted, de-duplicated list of 0-based indices.
+ * Blank input → empty list (callers decide whether that means "all pages").
+ */
+export function parsePages(input: string, pageCount: number): number[] {
+  if (!input.trim()) return [];
+  const flat = new Set<number>();
+  for (const range of parseRanges(input, pageCount)) for (const i of range) flat.add(i);
+  return [...flat].sort((a, b) => a - b);
+}
+
+/**
  * Parse a full page order like "3, 1, 2" into 0-based indices. Forgiving:
  * blank → identity; pages you didn't mention are appended in original order;
  * duplicates and out-of-range pages are rejected.

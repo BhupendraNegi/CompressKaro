@@ -14,6 +14,10 @@ const processors: Record<string, () => Promise<{ process: ProcessFn }>> = {
   'reorder-pdf': () => import('../../tools/reorder-pdf/process'),
   'compress-pdf': () => import('../../tools/compress-pdf/process'),
   'images-to-pdf': () => import('../../tools/images-to-pdf/process'),
+  'rotate-pdf': () => import('../../tools/rotate-pdf/process'),
+  'delete-pdf': () => import('../../tools/delete-pdf/process'),
+  'extract-pdf': () => import('../../tools/extract-pdf/process'),
+  'crop-pdf': () => import('../../tools/crop-pdf/process'),
 };
 
 const reply = (msg: WorkerResponse) => self.postMessage(msg);
