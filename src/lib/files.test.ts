@@ -16,6 +16,18 @@ describe('formatSize', () => {
   });
 });
 
+describe('matchesAccept', () => {
+  const file = (name: string, type: string) => new File([], name, { type });
+  it('matches extension lists, mime wildcards and exact types', async () => {
+    const { matchesAccept } = await import('./files');
+    expect(matchesAccept(file('a.PDF', 'application/pdf'), '.pdf')).toBe(true);
+    expect(matchesAccept(file('a.docx', 'application/vnd.x'), '.pdf')).toBe(false);
+    expect(matchesAccept(file('p.webp', 'image/webp'), 'image/*')).toBe(true);
+    expect(matchesAccept(file('p.mp4', 'video/mp4'), 'image/*')).toBe(false);
+    expect(matchesAccept(file('n.md', 'text/markdown'), '.txt,.md')).toBe(true);
+  });
+});
+
 describe('baseName', () => {
   it('strips only the final extension', () => {
     expect(baseName('report.pdf')).toBe('report');

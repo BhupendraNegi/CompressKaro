@@ -2,7 +2,7 @@ import { Suspense, useMemo, useRef, useState } from 'react';
 import type { OptionValues, ToolConfig, ToolOutput } from '../../tools/types';
 import { runTool } from '../../lib/workers/client';
 import { friendlyError } from '../../lib/errors';
-import { formatSize } from '../../lib/files';
+import { SOFT_SIZE_LIMIT, formatSize, matchesAccept } from '../../lib/files';
 import { acceptHint, copy } from '../../lib/copy';
 import { FileList } from './FileList';
 import { OptionsPanel } from './OptionsPanel';
@@ -36,6 +36,7 @@ export function ToolShell({ config }: Props) {
   const [outputs, setOutputs] = useState<ToolOutput[]>([]);
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
+  const [notice, setNotice] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const inputBytes = useMemo(() => files.reduce((s, f) => s + f.size, 0), [files]);
@@ -43,7 +44,18 @@ export function ToolShell({ config }: Props) {
 
   const addFiles = (incoming: File[]) => {
     if (!incoming.length) return;
-    let next = config.multi ? [...files, ...incoming] : incoming.slice(-1);
+    const accepted = incoming.filter((f) => matchesAccept(f, config.accept));
+    const rejected = incoming.filter((f) => !matchesAccept(f, config.accept));
+    const huge = accepted.find((f) => f.size > SOFT_SIZE_LIMIT);
+    setNotice(
+      rejected.length
+        ? `“${rejected[0].name}” isn’t supported here — this tool takes ${acceptHint(config.accept)}.`
+        : huge
+          ? `“${huge.name}” is ${formatSize(huge.size)}. Files this large are processed in your device’s memory and may be slow.`
+          : '',
+    );
+    if (!accepted.length) return;
+    let next = config.multi ? [...files, ...accepted] : accepted.slice(-1);
     const cap = config.maxFiles ?? 25;
     if (next.length > cap) next = next.slice(0, cap);
     setFiles(next);
@@ -94,6 +106,12 @@ export function ToolShell({ config }: Props) {
           e.target.value = '';
         }}
       />
+
+      {notice && (
+        <p role="status" className="mb-2 rounded-xl border border-line bg-accent-soft px-4 py-3 text-[13.5px] text-ink">
+          {notice}
+        </p>
+      )}
 
       {phase === 'empty' && (
         <div

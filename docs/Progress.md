@@ -259,9 +259,28 @@ Verify gate:
 - [x] `bin/lint` clean; build 32 pages, islands everywhere, zero coming-soon pages
 - [x] e2e: favicon zip + bulk zip (max-width flow) — run in CI
 
-## Phase 8 — Hardening & polish ⬜
+## Phase 8 — Hardening & polish ✅ (local gates 2026-07-05)
 
-- [ ] A11y pass (keyboard, focus, aria-live, contrast AA)
-- [ ] Error-state matrix across all tools (corrupt/wrong-type/encrypted/oversized)
-- [ ] Lighthouse ≥ 95 perf+SEO on every tool page (record numbers here)
-- [ ] Ad-slot component on tool pages; mobile sweep
+Path taken:
+- **Wrong-type guard**: drag-and-drop bypasses the input `accept` filter, so `matchesAccept`
+  (extensions, mime wildcards, exact types) re-validates in ToolShell; rejected files show a
+  friendly `role="status"` notice naming the file and what the tool takes.
+- **Oversize soft warning** at 100 MB (in-memory processing guardrail) — warns, doesn't block.
+- **Found & fixed a real Pages bug**: Astro's `BASE_URL` has no trailing slash under a subpath,
+  so every internal link rendered `/CompressKaromerge-pdf/`. Normalized in `lib/paths.ts`,
+  used by all layouts/pages/components; verified correct links in both local and `PAGES=true`
+  builds.
+- **AdSlot** component (labeled placeholder, diagonal-stripe 728×90/responsive) below the tool
+  area on every tool page, per spec — ready to wire to AdSense.
+- Global `:focus-visible` accent outline; error/status notices are `role="status"`;
+  `prefers-reduced-motion` already in the base CSS.
+- e2e: wrong-type drop shows the notice without leaving the empty phase; ad slot visible.
+
+Remaining (needs the deployed site):
+- [ ] Lighthouse ≥ 95 perf+SEO per page — measure on the live Pages URL, record here
+- [ ] Real-device mobile sweep
+
+Verify gate:
+- [x] `bin/test` green — 52 tests (matchesAccept matrix added)
+- [x] `bin/lint` clean; local AND `PAGES=true` builds verified link-correct
+- [x] e2e error-state + ad-slot specs written — run in CI

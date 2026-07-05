@@ -5,6 +5,9 @@ no uploads, no signup. Everything runs in your browser, deployed as a static sit
 
 > *Compress karo. Merge karo. Done.*
 
+**Status:** all 30 tools implemented (Phases 0–8 ✅ — see [docs/Progress.md](docs/Progress.md)).
+52 unit tests + per-tool Playwright e2e. Pending: first deploy to GitHub Pages + Lighthouse pass.
+
 ## Quick start (no host Node/pnpm needed)
 
 ```bash

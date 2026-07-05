@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/astro/Icon.astro';
 import TrustChips from '../components/astro/TrustChips.astro';
+import AdSlot from '../components/astro/AdSlot.astro';
 import { ToolShell } from '../components/react/ToolShell';
 import { liveTools, tools } from '../tools/registry';
 import type { ToolConfig } from '../tools/types';
@@ -15,7 +16,7 @@ interface Props {
 }
 
 const { tool } = Astro.props;
-const base = import.meta.env.BASE_URL;
+import { base } from '../lib/paths';
 const isLive = liveTools.has(tool.slug);
 
 const faqJsonLd =
@@ -76,6 +77,8 @@ const faqJsonLd =
           </div>
         )
       }
+
+      <AdSlot />
 
       {
         tool.steps.length > 0 && (
