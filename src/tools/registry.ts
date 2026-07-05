@@ -235,12 +235,48 @@ export const tools: ToolConfig[] = [
       { q: 'Is my PDF uploaded to compress it?', a: 'No. Rendering and rebuilding happen 100% in your browser.' },
     ],
   },
-  tool({ slug: 'protect-pdf', name: 'Protect PDF', desc: 'Add password encryption', category: 'optimize', icon: 'lock', verb: 'Protect',
-    options: [txt('pw', 'Password', 'Choose a strong password', undefined, 'password'), txt('pw2', 'Confirm password', 'Type it again', undefined, 'password')] }),
-  tool({ slug: 'unlock-pdf', name: 'Unlock PDF', desc: 'Remove a password you know', category: 'optimize', icon: 'unlock', verb: 'Unlock',
-    options: [txt('pw', 'Current password', 'Enter the PDF password', 'Only works on PDFs whose password you have.', 'password')] }),
-  tool({ slug: 'pdf-metadata', name: 'PDF Metadata Editor', desc: 'View & edit title, author, keywords', category: 'optimize', icon: 'doc', verb: 'Save',
-    options: [txt('title', 'Title', 'Document title'), txt('author', 'Author', 'Author name'), txt('subject', 'Subject', 'Subject'), txt('keywords', 'Keywords', 'comma, separated, keywords')] }),
+  {
+    ...tool({ slug: 'protect-pdf', name: 'Protect PDF', desc: 'Add password encryption', category: 'optimize', icon: 'lock', verb: 'Protect',
+      options: [txt('pw', 'Password', 'Choose a strong password', undefined, 'password'), txt('pw2', 'Confirm password', 'Type it again', undefined, 'password')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Choose a password and type it twice.',
+      'Hit “Protect Karo” and download the encrypted PDF.',
+    ],
+    faqs: [
+      { q: 'What encryption is used?', a: 'Standard PDF encryption — the file requires the password to open in any PDF viewer.' },
+      { q: 'What if I forget the password?', a: 'There is no recovery — that’s the point of encryption. Store the password somewhere safe.' },
+      { q: 'Does my password get sent anywhere?', a: 'Never. The encryption runs entirely in your browser; we never see the file or the password.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'unlock-pdf', name: 'Unlock PDF', desc: 'Remove a password you know', category: 'optimize', icon: 'unlock', verb: 'Unlock',
+      options: [txt('pw', 'Current password', 'Enter the PDF password', 'Only works on PDFs whose password you have.', 'password')] }),
+    steps: [
+      'Drop the password-protected PDF into the box above.',
+      'Enter its current password.',
+      'Hit “Unlock Karo” and download a copy that opens without one.',
+    ],
+    faqs: [
+      { q: 'Can this crack a password I don’t know?', a: 'No — it removes protection only from PDFs whose password you can provide. It’s for your own documents.' },
+      { q: 'Is the password sent to a server?', a: 'No. Decryption happens entirely in your browser.' },
+      { q: 'Why unlock a PDF?', a: 'To stop typing the password every time you open your own file, or to prepare it for tools that can’t read encrypted PDFs.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'pdf-metadata', name: 'PDF Metadata Editor', desc: 'View & edit title, author, keywords', category: 'optimize', icon: 'doc', verb: 'Save',
+      options: [txt('title', 'Title', 'Document title'), txt('author', 'Author', 'Author name'), txt('subject', 'Subject', 'Subject'), txt('keywords', 'Keywords', 'comma, separated, keywords', 'Blank fields keep their current value.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Fill in the fields you want to change — blank ones stay as they are.',
+      'Hit “Save Karo” and download.',
+    ],
+    faqs: [
+      { q: 'Why edit PDF metadata?', a: 'Title and author show up in viewers, search results and file managers — accurate metadata makes documents findable and professional.' },
+      { q: 'Can I clear a field completely?', a: 'Not yet — blank inputs keep the existing value. Explicit clearing is on the roadmap.' },
+      { q: 'Is my document uploaded?', a: 'No — the metadata is edited entirely in your browser.' },
+    ],
+  },
 
   // ── PDF · Annotate & Edit ──────────────────────────────────────────────────
   {
@@ -257,8 +293,21 @@ export const tools: ToolConfig[] = [
       { q: 'Can I sign more than one page?', a: 'Run the tool again on the signed output to add another signature — each pass places one.' },
     ],
   },
-  tool({ slug: 'annotate-pdf', name: 'Annotate PDF', desc: 'Highlight, draw and add notes', category: 'annotate', icon: 'annotate', verb: 'Annotate',
-    options: [choice('mode', 'Tool', ['Highlight', 'Note', 'Draw'])] }),
+  {
+    ...tool({ slug: 'annotate-pdf', name: 'Annotate PDF', desc: 'Draw and highlight on any page', category: 'annotate', icon: 'annotate', verb: 'Annotate',
+      options: [choice('tool', 'Tool', ['Pen', 'Highlighter']), choice('color', 'Ink color', ['Red', 'Blue', 'Black'], 'Color applies to the pen; the highlighter is always yellow.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Pick the pen or the highlighter and draw straight onto the page preview.',
+      'Switch pages with the page selector — each page keeps its own marks.',
+      'Hit “Annotate Karo” — your marks are flattened into the PDF.',
+    ],
+    faqs: [
+      { q: 'Can annotations be removed later?', a: 'No — they’re flattened into the page content, like ink on paper. Keep your original if you might want a clean copy.' },
+      { q: 'Can I add text notes or shapes?', a: 'Freehand pen and highlighter for now; text boxes and shapes are on the roadmap.' },
+      { q: 'Is my document uploaded?', a: 'No — drawing and flattening happen entirely in your browser.' },
+    ],
+  },
   {
     ...tool({ slug: 'watermark-pdf', name: 'Watermark PDF', desc: 'Stamp text across every page', category: 'annotate', icon: 'watermark', verb: 'Watermark',
       options: [txt('wm', 'Watermark text', 'e.g. CONFIDENTIAL'), slider('op', 'Opacity', 5, 100, 25, '%'), choice('pos', 'Placement', ['Diagonal', 'Center', 'Bottom'])] }),
@@ -394,9 +443,33 @@ export const tools: ToolConfig[] = [
       { q: 'Are my photos uploaded?', a: 'No — watermarking happens entirely in your browser.' },
     ],
   },
-  tool({ slug: 'favicon-generator', name: 'Favicon Generator', desc: 'One image → every favicon size', category: 'image', icon: 'img', verb: 'Generate', accept: 'image/*' }),
-  tool({ slug: 'bulk-image', name: 'Bulk Compress & Resize', desc: 'Process many images at once', category: 'image', icon: 'img', verb: 'Process', multi: true, accept: 'image/*',
-    options: [slider('q', 'Quality', 10, 100, 75, '%'), num('maxw', 'Max width (optional)', 'e.g. 1920', 'px'), choice('fmt', 'Format', ['Keep original', 'JPG', 'WebP'])] }),
+  {
+    ...tool({ slug: 'favicon-generator', name: 'Favicon Generator', desc: 'One image → every favicon size', category: 'image', icon: 'img', verb: 'Generate', accept: 'image/*' }),
+    steps: [
+      'Drop a square-ish logo or icon into the box above (512px+ recommended).',
+      'Hit “Generate Karo” — no options needed.',
+      'Download a zip with favicon.ico, all PNG sizes, apple-touch-icon, webmanifest and a README with the HTML snippet.',
+    ],
+    faqs: [
+      { q: 'Which sizes are included?', a: 'favicon.ico (16/32/48), favicon PNGs at 16, 32 and 48px, apple-touch-icon at 180px, and android-chrome at 192 and 512px, plus a ready site.webmanifest.' },
+      { q: 'What image should I start from?', a: 'A square image of at least 512×512. Non-square images are center-cropped to a square.' },
+      { q: 'Is my logo uploaded?', a: 'No — every size is generated in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'bulk-image', name: 'Bulk Compress & Resize', desc: 'Process many images at once', category: 'image', icon: 'img', verb: 'Process', multi: true, accept: 'image/*',
+      options: [slider('q', 'Quality', 10, 100, 75, '%'), num('maxw', 'Max width (optional)', 'e.g. 1920', 'px', 'Wider images shrink to this; smaller ones are left alone.'), choice('fmt', 'Format', ['Keep original', 'JPG', 'WebP'])] }),
+    steps: [
+      'Drop a whole batch of images into the box above (up to 25).',
+      'Set the quality, an optional max width, and the output format.',
+      'Hit “Process Karo” and download one zip with everything.',
+    ],
+    faqs: [
+      { q: 'Does the max width upscale small images?', a: 'No — images narrower than the max width are never enlarged, only wider ones shrink.' },
+      { q: 'How many images can I process?', a: 'Up to 25 per batch. The limit is your device’s memory, not our servers — there are none.' },
+      { q: 'Are my photos uploaded?', a: 'No — the whole batch, including the zip, is processed in your browser.' },
+    ],
+  },
 ];
 
 /** Slugs of tools whose processing is implemented; others render "coming soon".
@@ -426,6 +499,12 @@ export const liveTools = new Set<string>([
   'page-numbers-pdf',
   'header-footer-pdf',
   'watermark-image',
+  'annotate-pdf',
+  'protect-pdf',
+  'unlock-pdf',
+  'pdf-metadata',
+  'favicon-generator',
+  'bulk-image',
 ]);
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);

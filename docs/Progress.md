@@ -233,11 +233,31 @@ Verify gate:
 - [x] e2e: full sign flow (draw stroke → click preview → placement marker → signed download),
       watermark flow — run in CI
 
-## Phase 7 — Security & extras ⬜
+## Phase 7 — Security & extras ✅ (local gates 2026-07-05) — **all 30 tools live**
 
-- [ ] Protect PDF · Unlock PDF (encryption spike: pdf-lib fork vs qpdf-wasm) · Metadata Editor
-- [ ] Favicon Generator · Bulk Compress/Resize
-- [ ] Verify: protect→unlock round-trip e2e; favicon zip complete
+Path taken:
+- **Encryption spike resolved → `@cantoo/pdf-lib`** (pdf-lib fork with encrypt/decrypt).
+  Imported only by protect/unlock, so the fork code-splits away from every other tool.
+  **Protect PDF** (password ×2, min length) · **Unlock PDF** (load with password → save plain;
+  wrong-password mapped to friendly copy).
+- **PDF Metadata Editor** — title/author/subject/keywords; blank keeps existing.
+- **Favicon Generator** — center-square crop → 16/32/48/180/192/512 PNGs, hand-built
+  `favicon.ico` (PNG-in-ICO container, `lib/image/ico.ts`), `site.webmanifest`, README with the
+  HTML snippet — one zip.
+- **Bulk Compress & Resize** — quality + never-upscaling `maxWidth` (added to the transform
+  pipeline) + format force, zipped.
+- **Annotate PDF** (deferred from Phase 6) — AnnotatePanel draws pen/highlighter strokes on a
+  transparent canvas over the pdfjs page preview, per-page PNGs stored in an `inks` JSON option,
+  flattened full-bleed in the worker. Pen colors red/blue/black; highlighter translucent yellow.
+- SEO steps + FAQs for all six; `liveTools` = **30 of 30** — no "Ban raha hai…" pages left
+  (verified: 0 in the built site).
+
+Verify gate:
+- [x] `bin/test` green — 51 tests incl. **protect→unlock round trip in Node**: encrypted output
+      rejected by plain pdf-lib, unlocked with the right password, wrong password rejected;
+      metadata fields; annotate ink flattening + empty rejection; ICO directory bytes
+- [x] `bin/lint` clean; build 32 pages, islands everywhere, zero coming-soon pages
+- [x] e2e: favicon zip + bulk zip (max-width flow) — run in CI
 
 ## Phase 8 — Hardening & polish ⬜
 

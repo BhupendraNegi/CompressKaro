@@ -6,6 +6,8 @@ export interface TransformOptions {
   /** Target width/height in px; leave one 0/undefined to keep aspect ratio */
   width?: number;
   height?: number;
+  /** Shrink to this width if wider — never upscales (bulk mode) */
+  maxWidth?: number;
   /** Clockwise rotation */
   rotate?: 0 | 90 | 180 | 270;
   flipH?: boolean;
@@ -46,6 +48,7 @@ export async function transformImage(file: File, opts: TransformOptions): Promis
     // 2. Output size (pre-rotation), keeping aspect when one side is missing.
     let dw = opts.width || 0;
     let dh = opts.height || 0;
+    if (!dw && !dh && opts.maxWidth && sw > opts.maxWidth) dw = opts.maxWidth;
     if (!dw && !dh) {
       dw = sw;
       dh = sh;

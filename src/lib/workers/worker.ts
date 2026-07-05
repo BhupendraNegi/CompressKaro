@@ -32,6 +32,12 @@ const processors: Record<string, () => Promise<{ process: ProcessFn }>> = {
   'page-numbers-pdf': () => import('../../tools/page-numbers-pdf/process'),
   'header-footer-pdf': () => import('../../tools/header-footer-pdf/process'),
   'watermark-image': () => import('../../tools/watermark-image/process'),
+  'annotate-pdf': () => import('../../tools/annotate-pdf/process'),
+  'protect-pdf': () => import('../../tools/protect-pdf/process'),
+  'unlock-pdf': () => import('../../tools/unlock-pdf/process'),
+  'pdf-metadata': () => import('../../tools/pdf-metadata/process'),
+  'favicon-generator': () => import('../../tools/favicon-generator/process'),
+  'bulk-image': () => import('../../tools/bulk-image/process'),
 };
 
 const reply = (msg: WorkerResponse) => self.postMessage(msg);

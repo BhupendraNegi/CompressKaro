@@ -17,6 +17,7 @@ interface PanelEntry {
 
 const PagePicker = lazy(() => import('./PdfPagePicker').then((m) => ({ default: m.PdfPagePicker })));
 const SignPanel = lazy(() => import('./SignPanel').then((m) => ({ default: m.SignPanel })));
+const AnnotatePanel = lazy(() => import('./AnnotatePanel').then((m) => ({ default: m.AnnotatePanel })));
 
 /**
  * Tool-specific panels shown inside ToolShell's ready phase. Lazy so heavy
@@ -29,4 +30,5 @@ export const toolPanels: Record<string, PanelEntry> = {
   'rotate-pdf': { component: PagePicker, props: { optionKey: 'pages', mode: 'select' } },
   'crop-pdf': { component: PagePicker, props: { optionKey: 'pages', mode: 'select' } },
   'sign-pdf': { component: SignPanel },
+  'annotate-pdf': { component: AnnotatePanel },
 };
