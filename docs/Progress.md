@@ -40,15 +40,28 @@ Created before Phase 0, borrowed from CronLens and adapted to Astro:
 
 ---
 
-## Phase 0 — Scaffold & infra ⬜
+## Phase 0 — Scaffold & infra ✅ (local gates 2026-07-05; CI/Pages pending first push)
 
 Goal: blank Astro page building; dev container serving; Vitest green; CI + Pages deploy green.
 
+Path taken:
+- Hand-scaffolded (no `create-astro`) to match the documented repo structure: `astro.config.mjs`
+  (static output, env-gated `base`), Tailwind v4 via `@tailwindcss/vite`, React integration,
+  strict tsconfig.
+- Registry data model seeded in `src/tools/types.ts`; first pure-lib module `src/lib/files.ts`
+  (`formatSize`, from the prototype) with 3 Vitest tests.
+- Playwright wired with a homepage smoke spec (`e2e/smoke.spec.ts`) + `webServer` config.
+- Minimal homepage + BaseLayout with the design tokens stubbed in `global.css` (full theme = Phase 1).
+- ESLint 9 flat config (js + typescript-eslint + eslint-plugin-astro); needed a `process` global
+  for root config files.
+
 Verify gate:
-- [ ] `bin/setup` completes on a fresh machine (Colima profile up, image built, lockfile extracted)
-- [ ] `bin/dev` serves `localhost:4321` from the container with hot reload
-- [ ] `bin/test` runs a green scaffold test; `bin/lint` passes
-- [ ] `ci.yml` green; Pages deploy publishes and `_astro/` assets load under the `/CompressKaro/` base
+- [x] `bin/setup` completes (Colima profile `compresskaro` up, image built, `pnpm-lock.yaml` extracted)
+- [x] `bin/dev` serves `localhost:4321` from the container — HTTP 200, `<title>CompressKaro — Free PDF & Image tools</title>`
+- [x] `bin/test` green (3 tests) · `bin/lint` passes (eslint + `astro check`: 0 errors)
+- [x] `PAGES=true pnpm build` emits `dist/` with assets under `/CompressKaro/_astro/…`
+- [ ] `ci.yml` + Pages deploy green on GitHub — verify after first push to `origin/main`
+      (repo: `github.com/BhupendraNegi/CompressKaro`; enable Pages → Source: GitHub Actions)
 
 ## Phase 1 — Design system & homepage ⬜
 

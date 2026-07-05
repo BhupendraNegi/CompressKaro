@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+
+/* Design tokens (docs/Design-System.md §3) — full theme mapping lands in Phase 1. */
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f4f2ee;
+  --text: #1d1a17;
+  --muted: #7a736b;
+  --line: #e8e4de;
+  --accent: oklch(0.6 0.19 25);
+  --accent-ink: #ffffff;
+  --accent-soft: oklch(0.96 0.02 25);
+}
+
+html[data-theme='dark'] {
+  --bg: #161311;
+  --surface: #201c19;
+  --surface2: #292420;
+  --text: #f3efeb;
+  --muted: #a39a90;
+  --line: #332d28;
+  --accent: oklch(0.66 0.18 25);
+  --accent-ink: #1d1a17;
+  --accent-soft: oklch(0.28 0.05 25);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
