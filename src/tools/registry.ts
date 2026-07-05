@@ -243,16 +243,65 @@ export const tools: ToolConfig[] = [
     options: [txt('title', 'Title', 'Document title'), txt('author', 'Author', 'Author name'), txt('subject', 'Subject', 'Subject'), txt('keywords', 'Keywords', 'comma, separated, keywords')] }),
 
   // ── PDF · Annotate & Edit ──────────────────────────────────────────────────
-  tool({ slug: 'sign-pdf', name: 'Sign PDF', desc: 'Draw and place your signature', category: 'annotate', icon: 'sign', verb: 'Sign',
-    options: [choice('mode', 'Signature', ['Draw', 'Type']), txt('name', 'Your name', 'e.g. Priya Sharma', 'Click on the page preview to place it.')] }),
+  {
+    ...tool({ slug: 'sign-pdf', name: 'Sign PDF', desc: 'Draw and place your signature', category: 'annotate', icon: 'sign', verb: 'Sign' }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Draw your signature with mouse or finger — or type your name.',
+      'Click the page preview where the signature should go; drag to adjust, use the slider to resize.',
+      'Hit “Sign Karo” and download the signed PDF.',
+    ],
+    faqs: [
+      { q: 'Is this a legally binding e-signature?', a: 'It stamps your handwritten mark into the PDF — fine for everyday paperwork. It is not a cryptographic digital signature with a certificate.' },
+      { q: 'Does my signature get stored anywhere?', a: 'No. It exists only in your browser’s memory while you work and is gone when you leave the page.' },
+      { q: 'Can I sign more than one page?', a: 'Run the tool again on the signed output to add another signature — each pass places one.' },
+    ],
+  },
   tool({ slug: 'annotate-pdf', name: 'Annotate PDF', desc: 'Highlight, draw and add notes', category: 'annotate', icon: 'annotate', verb: 'Annotate',
     options: [choice('mode', 'Tool', ['Highlight', 'Note', 'Draw'])] }),
-  tool({ slug: 'watermark-pdf', name: 'Watermark PDF', desc: 'Stamp text across every page', category: 'annotate', icon: 'watermark', verb: 'Watermark',
-    options: [txt('wm', 'Watermark text', 'e.g. CONFIDENTIAL'), slider('op', 'Opacity', 5, 100, 25, '%'), choice('pos', 'Placement', ['Diagonal', 'Center', 'Bottom'])] }),
-  tool({ slug: 'page-numbers-pdf', name: 'Add Page Numbers', desc: 'Number every page, your style', category: 'annotate', icon: 'hash', verb: 'Number',
-    options: [choice('pos', 'Position', ['Bottom center', 'Bottom right', 'Top right']), choice('fmt', 'Format', ['1, 2, 3', 'Page 1 of N', '– 1 –'])] }),
-  tool({ slug: 'header-footer-pdf', name: 'Header & Footer', desc: 'Add running text to every page', category: 'annotate', icon: 'hf', verb: 'Apply',
-    options: [txt('h', 'Header text', 'e.g. Q2 Report — Draft'), txt('f', 'Footer text', 'e.g. © 2026 Acme Pvt Ltd')] }),
+  {
+    ...tool({ slug: 'watermark-pdf', name: 'Watermark PDF', desc: 'Stamp text across every page', category: 'annotate', icon: 'watermark', verb: 'Watermark',
+      options: [txt('wm', 'Watermark text', 'e.g. CONFIDENTIAL'), slider('op', 'Opacity', 5, 100, 25, '%'), choice('pos', 'Placement', ['Diagonal', 'Center', 'Bottom'])] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Type the watermark text and set its opacity.',
+      'Pick a placement: diagonal across the page, centered, or along the bottom.',
+      'Hit “Watermark Karo” — it stamps every page.',
+    ],
+    faqs: [
+      { q: 'Can the watermark be removed later?', a: 'It becomes part of each page’s content, so it can’t be casually deleted — but like any visible watermark, a determined editor could cover it.' },
+      { q: 'Can I use an image as the watermark?', a: 'Text only for now; image watermarks are on the roadmap.' },
+      { q: 'Is my PDF uploaded?', a: 'No — the watermark is stamped entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'page-numbers-pdf', name: 'Add Page Numbers', desc: 'Number every page, your style', category: 'annotate', icon: 'hash', verb: 'Number',
+      options: [choice('pos', 'Position', ['Bottom center', 'Bottom right', 'Top right']), choice('fmt', 'Format', ['1, 2, 3', 'Page 1 of N', '– 1 –'])] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Pick where the numbers go and how they look.',
+      'Hit “Number Karo” and download.',
+    ],
+    faqs: [
+      { q: 'Can numbering start from a page other than 1?', a: 'Not yet — numbering starts at 1 on the first page. A custom start number is on the roadmap.' },
+      { q: 'Will numbers overlap my content?', a: 'They sit in the page margin (28pt from the edge) in a small, unobtrusive gray — clear of typical content.' },
+      { q: 'Is my PDF uploaded?', a: 'No — numbering happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'header-footer-pdf', name: 'Header & Footer', desc: 'Add running text to every page', category: 'annotate', icon: 'hf', verb: 'Apply',
+      options: [txt('h', 'Header text', 'e.g. Q2 Report — Draft'), txt('f', 'Footer text', 'e.g. © 2026 Acme Pvt Ltd')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Type a header, a footer, or both.',
+      'Hit “Apply Karo” — the text runs centered on every page.',
+    ],
+    faqs: [
+      { q: 'Can I put text on the left or right?', a: 'Centered only for now; left/center/right slots are on the roadmap.' },
+      { q: 'Does it work with page numbers?', a: 'Yes — run Add Page Numbers on the output (or vice versa); they use the same margins without clashing at different positions.' },
+      { q: 'Is my PDF uploaded?', a: 'No — everything happens in your browser.' },
+    ],
+  },
 
   // ── Image tools ────────────────────────────────────────────────────────────
   {
@@ -330,8 +379,21 @@ export const tools: ToolConfig[] = [
       { q: 'How does it work without uploading?', a: 'The photo is re-drawn onto a clean canvas in your browser — pixels survive, metadata doesn’t. Nothing is sent anywhere.' },
     ],
   },
-  tool({ slug: 'watermark-image', name: 'Image Watermark', desc: 'Stamp text or a logo on photos', category: 'image', icon: 'watermark', verb: 'Watermark', multi: true, accept: 'image/*',
-    options: [txt('wm', 'Watermark text', 'e.g. © Your Name'), slider('op', 'Opacity', 5, 100, 40, '%'), choice('pos', 'Position', ['Bottom right', 'Center', 'Tile'])] }),
+  {
+    ...tool({ slug: 'watermark-image', name: 'Image Watermark', desc: 'Stamp text on your photos', category: 'image', icon: 'watermark', verb: 'Watermark', multi: true, accept: 'image/*',
+      options: [txt('wm', 'Watermark text', 'e.g. © Your Name'), slider('op', 'Opacity', 5, 100, 40, '%'), choice('pos', 'Position', ['Bottom right', 'Center', 'Tile'])] }),
+    steps: [
+      'Drop one or more photos into the box above.',
+      'Type the watermark text and set its opacity.',
+      'Pick bottom-right, centered, or a diagonal tile across the whole photo.',
+      'Hit “Watermark Karo” and download.',
+    ],
+    faqs: [
+      { q: 'Which position should I use?', a: 'Bottom-right for a subtle credit, Tile to make the photo hard to reuse without permission.' },
+      { q: 'Will the watermark survive edits?', a: 'It’s baked into the pixels, so cropping can remove a corner mark — the Tile option covers the whole image.' },
+      { q: 'Are my photos uploaded?', a: 'No — watermarking happens entirely in your browser.' },
+    ],
+  },
   tool({ slug: 'favicon-generator', name: 'Favicon Generator', desc: 'One image → every favicon size', category: 'image', icon: 'img', verb: 'Generate', accept: 'image/*' }),
   tool({ slug: 'bulk-image', name: 'Bulk Compress & Resize', desc: 'Process many images at once', category: 'image', icon: 'img', verb: 'Process', multi: true, accept: 'image/*',
     options: [slider('q', 'Quality', 10, 100, 75, '%'), num('maxw', 'Max width (optional)', 'e.g. 1920', 'px'), choice('fmt', 'Format', ['Keep original', 'JPG', 'WebP'])] }),
@@ -359,6 +421,11 @@ export const liveTools = new Set<string>([
   'crop-image',
   'rotate-flip-image',
   'strip-exif',
+  'sign-pdf',
+  'watermark-pdf',
+  'page-numbers-pdf',
+  'header-footer-pdf',
+  'watermark-image',
 ]);
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);

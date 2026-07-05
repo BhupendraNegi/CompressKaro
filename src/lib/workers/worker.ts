@@ -27,6 +27,11 @@ const processors: Record<string, () => Promise<{ process: ProcessFn }>> = {
   'crop-image': () => import('../../tools/crop-image/process'),
   'rotate-flip-image': () => import('../../tools/rotate-flip-image/process'),
   'strip-exif': () => import('../../tools/strip-exif/process'),
+  'sign-pdf': () => import('../../tools/sign-pdf/process'),
+  'watermark-pdf': () => import('../../tools/watermark-pdf/process'),
+  'page-numbers-pdf': () => import('../../tools/page-numbers-pdf/process'),
+  'header-footer-pdf': () => import('../../tools/header-footer-pdf/process'),
+  'watermark-image': () => import('../../tools/watermark-image/process'),
 };
 
 const reply = (msg: WorkerResponse) => self.postMessage(msg);

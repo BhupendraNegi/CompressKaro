@@ -205,11 +205,33 @@ Verify gate:
 - [x] e2e: convert-webp name, resize aspect flow, pdf-to-text extracts drawn text verbatim,
       create-pdf no-file flow — run in CI
 
-## Phase 6 — Placement overlay & annotate ⬜
+## Phase 6 — Placement overlay & annotate ✅ (local gates 2026-07-05; annotate → Phase 7)
 
-- [ ] PlacementOverlay (click-to-place, drag, resize; preview→PDF coord mapping)
-- [ ] Sign · Annotate · Watermark PDF · Page Numbers · Header & Footer · Image Watermark
-- [ ] Verify: coord-mapping unit tests at multiple zooms; watermark pixel-probe e2e
+Path taken:
+- **Panel API generalized**: panels now receive `{file, values, onChange(key, value)}` so one
+  panel can drive multiple options (PdfPagePicker adapted; entries carry static props).
+- **SignPanel — the click-to-place overlay**: draw-pad (pointer events) or typed name rendered
+  in italic serif → PNG data URL; pdfjs page preview with click/drag placement + size slider;
+  placement stored as resolution-independent fractions `{page, x, y, w}`. `sign-pdf/process`
+  maps preview fractions → PDF points (bottom-left origin flip), stamps the embedded PNG.
+- **Watermark PDF** (diagonal 45° / center / bottom, opacity, size auto-scaled to page),
+  **Add Page Numbers** (3 positions × 3 formats), **Header & Footer** (centered running text),
+  **Image Watermark** (canvas stamp: bottom-right / center / rotated tile, stroke+fill for
+  contrast on any photo).
+- SEO steps + FAQs for the five; `liveTools` now **24 of 30**.
+
+Decisions:
+- **Annotate PDF moved to Phase 7** — it needs per-page freehand stroke capture (a multi-page
+  variant of the sign overlay); shipping five polished tools beat six rushed ones.
+- Sign/watermark honesty in FAQs: stamped signature ≠ cryptographic signature; text-only PDF
+  watermarks for now.
+
+Verify gate:
+- [x] `bin/test` green — 43 tests (sign coord mapping + embed-size growth + error paths,
+      watermark/page-number/header-footer stampers incl. all formats)
+- [x] `bin/lint` clean; build green; islands on all 5 new pages; annotate-pdf still coming-soon
+- [x] e2e: full sign flow (draw stroke → click preview → placement marker → signed download),
+      watermark flow — run in CI
 
 ## Phase 7 — Security & extras ⬜
 

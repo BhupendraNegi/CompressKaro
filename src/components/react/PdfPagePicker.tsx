@@ -5,11 +5,11 @@ interface Thumb {
   url: string;
 }
 
-export interface PagePanelProps {
-  file: File;
-  /** Current value of the bound option ("3, 1, 2" order or "1, 4" selection, 1-based) */
-  value: string;
-  onChange: (pages: string) => void;
+import type { PanelBaseProps } from './toolPanels';
+
+export interface PagePanelProps extends PanelBaseProps {
+  /** Which option the picker reads/writes ("3, 1, 2" order or "1, 4" selection, 1-based) */
+  optionKey: string;
   /** reorder: drag into a new order · select: click to toggle pages */
   mode: 'reorder' | 'select';
 }
@@ -28,7 +28,9 @@ const parseSelection = (value: string): Set<number> => {
  * emits "3, 1, 2" order text; select mode emits "1, 4" selection text. Both
  * bind to the tool's matching text option, so typing and clicking stay in sync.
  */
-export function PdfPagePicker({ file, value, onChange, mode }: PagePanelProps) {
+export function PdfPagePicker({ file, values, onChange, optionKey, mode }: PagePanelProps) {
+  const value = String(values[optionKey] ?? '');
+  const emit = (v: string) => onChange(optionKey, v);
   const [thumbs, setThumbs] = useState<Thumb[]>([]);
   const [error, setError] = useState('');
   const [dragIdx, setDragIdx] = useState<number | null>(null);
@@ -68,7 +70,7 @@ export function PdfPagePicker({ file, value, onChange, mode }: PagePanelProps) {
     const [t] = next.splice(from, 1);
     next.splice(to, 0, t);
     setThumbs(next);
-    onChange(next.map((t) => t.page).join(', '));
+    emit(next.map((t) => t.page).join(', '));
   };
 
   const selection = parseSelection(value);
@@ -76,7 +78,7 @@ export function PdfPagePicker({ file, value, onChange, mode }: PagePanelProps) {
     const next = new Set(selection);
     if (next.has(page)) next.delete(page);
     else next.add(page);
-    onChange([...next].sort((a, b) => a - b).join(', '));
+    emit([...next].sort((a, b) => a - b).join(', '));
   };
 
   if (error) return <p className="m-0 rounded-xl border border-line bg-surface2 p-3 text-[13px] text-mute">{error}</p>;

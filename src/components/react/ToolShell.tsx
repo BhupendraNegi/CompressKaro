@@ -163,9 +163,9 @@ export function ToolShell({ config }: Props) {
               <Suspense fallback={<p className="m-0 py-4 text-center text-[13px] text-mute">Loading previews…</p>}>
                 <Panel
                   file={files[0]}
-                  value={String(values[panel.optionKey] ?? '')}
-                  onChange={(v) => setValues({ ...values, [panel.optionKey]: v })}
-                  mode={panel.mode}
+                  values={values}
+                  onChange={(key: string, value: string | number) => setValues((prev) => ({ ...prev, [key]: value }))}
+                  {...panel.props}
                 />
               </Suspense>
             );
