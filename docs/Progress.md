@@ -1,0 +1,101 @@
+# CompressKaro — Build Log & Phase Tracker
+
+Living record of what's been built, decisions taken, and how each phase was verified.
+Phase definitions live in [Architecture.md §8](./Architecture.md#8-phased-build-plan).
+
+Status legend: ⬜ not started · 🟡 in progress · ✅ done
+
+---
+
+## Decisions log
+
+| Date | Decision | Rationale |
+|---|---|---|
+| 2026-07-05 | Stack: **Astro (static) + React islands**, Tailwind, pnpm, Node 22 | Per spec. ~30 SEO pages with one hydrated widget each — islands keep per-page JS minimal (Lighthouse 95+ target). Deliberate divergence from CronLens's Next.js. |
+| 2026-07-05 | Deploy to **GitHub Pages** (not Vercel) | Free, in-repo, matches CronLens. Static output stays Vercel-compatible if PR previews are ever wanted. |
+| 2026-07-05 | Serve from subpath `bhupendranegi.github.io/CompressKaro/`; `base` env-gated on `PAGES=true` | Local dev stays path-free; only CI builds with the subpath. Custom domain would remove this. |
+| 2026-07-05 | Dev inside Docker on dedicated Colima profile **`compresskaro`**; `bin/` scripts as the only entry points | Mirrors CronLens ergonomics (idempotent, colored, teardown trap, free-port). Socket via `DOCKER_HOST`, no global context switch. No host Node/pnpm needed. |
+| 2026-07-05 | Tool inventory = **spec ∪ design prototype = 31 tools** | See [Tool-Catalog.md](./Tool-Catalog.md) reconciliation. Prototype naming/options win where both define a tool. |
+| 2026-07-05 | **Hinglish voice on by default** ("Merge Karo →", "Ho gaya!") | It's the brand. Copy centralized in one module so an English switch stays cheap. |
+| 2026-07-05 | All processing in **Web Workers** with real progress events | Spec requirement; UI must never freeze, progress bar must be honest. |
+| 2026-07-05 | Git commits: **no Claude co-author trailer, ever** | User convention (same as CronLens). |
+
+---
+
+## Infra pre-pass (this repo bootstrap, 2026-07-05) ✅
+
+Created before Phase 0, borrowed from CronLens and adapted to Astro:
+
+- `CLAUDE.md` — working conventions + project setup summary.
+- `bin/setup`, `bin/dev`, `bin/test`, `bin/lint` — Colima profile `compresskaro`, port 4321,
+  free-port fallback, teardown trap; host-pnpm auto-detect for CI.
+- `.github/workflows/ci.yml` (lint + typecheck + test + build), `e2e.yml` (Playwright),
+  `deploy.yml` (Pages: `PAGES=true` build → `.nojekyll` → publish `dist/`).
+- `Dockerfile` (Node 22 alpine + corepack pnpm), `docker-compose.yml` (bind-mount, named
+  `node_modules`/`pnpm_store` volumes, polling watch), `.dockerignore`.
+- `docs/` — Architecture, Design-System, Tool-Catalog, Progress (this file).
+
+**Note:** these become runnable at Phase 0 — `bin/setup`/CI need `package.json` +
+`astro.config.mjs` to exist. Workflows will fail on pushes until Phase 0 lands; that's expected.
+
+---
+
+## Phase 0 — Scaffold & infra ⬜
+
+Goal: blank Astro page building; dev container serving; Vitest green; CI + Pages deploy green.
+
+Verify gate:
+- [ ] `bin/setup` completes on a fresh machine (Colima profile up, image built, lockfile extracted)
+- [ ] `bin/dev` serves `localhost:4321` from the container with hot reload
+- [ ] `bin/test` runs a green scaffold test; `bin/lint` passes
+- [ ] `ci.yml` green; Pages deploy publishes and `_astro/` assets load under the `/CompressKaro/` base
+
+## Phase 1 — Design system & homepage ⬜
+
+- [ ] Tokens → Tailwind theme (light/dark), Instrument Sans/Serif self-hosted
+- [ ] Header (sticky, blur, theme toggle persisted) + footer (registry-driven columns)
+- [ ] Hero + trust chips + live search island + categorized tool grid from the registry
+- [ ] Homepage FAQ + FAQPage JSON-LD; sitemap.xml, robots.txt, OG/Twitter meta
+- [ ] Verify: visual parity light+dark; search filters live; Lighthouse SEO ≥ 95
+
+## Phase 2 — ToolShell + Merge PDF + Compress Image ⬜
+
+- [ ] ToolShell island: empty → ready → processing → done; options-schema renderer; worker protocol
+- [ ] Merge PDF (multi, drag-reorder, 25 cap) · Compress Image (quality + target-KB loop)
+- [ ] Verify: e2e — merge two fixture PDFs → `merged.pdf`; compress fixture under target KB
+
+## Phase 3 — PDF page infra + high-traffic tools ⬜
+
+- [ ] pdfjs viewer + PdfPagePicker (thumbnails, selection, zoom)
+- [ ] Compress PDF · Split PDF (zip) · Images to PDF · Reorder Pages
+- [ ] Verify: per-tool e2e; real size reduction shown; split ranges → correct page counts
+
+## Phase 4 — Page-operation tools ⬜
+
+- [ ] Rotate PDF · Delete Pages · Extract Pages · Crop PDF (crop-box UI)
+- [ ] Verify: e2e per tool; crop coordinates unit-tested against output dimensions
+
+## Phase 5 — Convert & image suite ⬜
+
+- [ ] PDF to Images · PDF to Text · Create PDF
+- [ ] Convert Image · Convert to WebP · Resize · Crop Image · Rotate & Flip · Strip EXIF
+- [ ] Verify: e2e per tool; conversions validated by decoding output in-test
+
+## Phase 6 — Placement overlay & annotate ⬜
+
+- [ ] PlacementOverlay (click-to-place, drag, resize; preview→PDF coord mapping)
+- [ ] Sign · Annotate · Watermark PDF · Page Numbers · Header & Footer · Image Watermark
+- [ ] Verify: coord-mapping unit tests at multiple zooms; watermark pixel-probe e2e
+
+## Phase 7 — Security & extras ⬜
+
+- [ ] Protect PDF · Unlock PDF (encryption spike: pdf-lib fork vs qpdf-wasm) · Metadata Editor
+- [ ] Favicon Generator · Bulk Compress/Resize
+- [ ] Verify: protect→unlock round-trip e2e; favicon zip complete
+
+## Phase 8 — Hardening & polish ⬜
+
+- [ ] A11y pass (keyboard, focus, aria-live, contrast AA)
+- [ ] Error-state matrix across all tools (corrupt/wrong-type/encrypted/oversized)
+- [ ] Lighthouse ≥ 95 perf+SEO on every tool page (record numbers here)
+- [ ] Ad-slot component on tool pages; mobile sweep
