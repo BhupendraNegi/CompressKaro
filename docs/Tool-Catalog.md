@@ -2,7 +2,7 @@
 
 Single source of truth for the tool inventory: the union of the spec
 ([specifications.md](./specifications.md), 28 tools) and the design prototype (26 tools),
-reconciled below — **31 tools total**. Slugs/names/taglines/options come from the prototype where
+reconciled below — **30 tools total**. Slugs/names/taglines/options come from the prototype where
 it defined them (they're already user-tested copy); spec-only tools get consistent equivalents.
 `Phase` refers to [Architecture.md §8](./Architecture.md#8-phased-build-plan).
 

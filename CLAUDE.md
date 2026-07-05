@@ -67,7 +67,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## Project Setup (CompressKaro)
 
-See [docs/Architecture.md](docs/Architecture.md) for the full plan; [docs/specifications.md](docs/specifications.md) for the product spec; [docs/Design-System.md](docs/Design-System.md) for visual/copy rules; [docs/Tool-Catalog.md](docs/Tool-Catalog.md) for the 31-tool inventory; [docs/Progress.md](docs/Progress.md) for phase status.
+See [docs/Architecture.md](docs/Architecture.md) for the full plan; [docs/specifications.md](docs/specifications.md) for the product spec; [docs/Design-System.md](docs/Design-System.md) for visual/copy rules; [docs/Tool-Catalog.md](docs/Tool-Catalog.md) for the 30-tool inventory; [docs/Progress.md](docs/Progress.md) for phase status.
 
 - **What it is:** a 100% client-side PDF & image tool suite. Core promise: "Your files never leave your device." No backend, no uploads, no auth — ever.
 - **Stack:** Astro (static output) + React islands + TypeScript, Tailwind CSS (class-strategy dark mode), pnpm, Node 22 (in Docker). PDF: pdf-lib / pdfjs-dist / jsPDF. Images: browser-image-compression + Canvas. Zip: fflate. Reorder: dnd-kit.

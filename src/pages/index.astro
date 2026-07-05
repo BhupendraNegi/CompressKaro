@@ -1,18 +1,173 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/astro/Icon.astro';
+import TrustChips from '../components/astro/TrustChips.astro';
+import { homeSections } from '../tools/registry';
+
+const base = import.meta.env.BASE_URL;
+
+const faqs = [
+  {
+    q: 'Are my files uploaded to a server?',
+    a: 'No — never. Every tool runs entirely in your browser using JavaScript. Your files are processed on your own device and never leave it.',
+  },
+  {
+    q: 'Is CompressKaro really free?',
+    a: 'Yes, 100% free with no signup, no watermarks, and no hidden limits. It stays free because processing happens on your device — we have no server costs per file.',
+  },
+  {
+    q: 'Is there a file size limit?',
+    a: 'There is no artificial limit. The practical limit is your device’s memory — very large files (hundreds of MB) may be slow on low-end phones.',
+  },
+  {
+    q: 'Which browsers are supported?',
+    a: 'All modern browsers: Chrome, Edge, Firefox and Safari — on desktop and mobile. No extensions or installs needed.',
+  },
+  {
+    q: 'Can I use it offline?',
+    a: 'Once a tool page has loaded, processing happens locally, so a dropped connection won’t interrupt it.',
+  },
+];
+
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+});
+
+const howItWorks = [
+  { title: 'Pick a tool & add files', text: 'Choose from 30 PDF and image tools, then drop in your files. They open directly in your browser — nothing is sent anywhere.' },
+  { title: 'Your browser does the work', text: 'The processing runs on your own device using the same technology as any modern web app. No server ever sees your documents.' },
+  { title: 'Download the result', text: 'Your finished file is ready in seconds. Ho gaya! Close the tab and nothing is left behind.' },
+];
 ---
 
 <BaseLayout
-  title="CompressKaro — Free PDF & Image tools"
-  description="Free PDF & image tools that run 100% in your browser. Your files never leave your device."
+  title="CompressKaro — Free PDF & Image Tools, 100% Private"
+  description="Free online PDF and image tools that run entirely in your browser. Merge, split, compress, convert and more — your files never leave your device."
 >
-  <main class="mx-auto max-w-[1120px] px-5 py-16 text-center">
-    <h1 class="text-5xl font-semibold tracking-tight">
-      Compress<span class="italic" style="color: var(--accent)">Karo</span>
-    </h1>
-    <p class="mt-4 text-lg" style="color: var(--muted)">
-      Free PDF &amp; Image tools. 100% private — files never leave your device.
-    </p>
-    <p class="mt-2 text-sm" style="color: var(--muted)">Phase 0 scaffold — tools coming soon.</p>
+  <script type="application/ld+json" set:html={faqJsonLd} slot="head" />
+
+  <main>
+    <!-- Hero -->
+    <section class="mx-auto max-w-[1120px] px-5 pt-16 pb-10 text-center">
+      <h1 class="m-0 text-[clamp(38px,7.5vw,68px)] leading-[1.05] font-semibold tracking-[-0.03em]">Free PDF &amp; Image tools.</h1>
+      <p class="mt-3.5 mb-0 font-serif text-[clamp(24px,4.5vw,38px)] leading-tight italic text-accent">Compress karo. Merge karo. Done.</p>
+      <p class="mx-auto mt-[18px] mb-0 max-w-[520px] text-[17px] leading-relaxed text-mute">
+        100% private — files never leave your device. Everything runs right here in your browser.
+      </p>
+
+      <TrustChips variant="large" />
+
+      <!-- Search -->
+      <div class="relative mx-auto mt-9 max-w-[480px]">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="pointer-events-none absolute top-1/2 left-4 h-[18px] w-[18px] -translate-y-1/2 text-mute" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+        </svg>
+        <input
+          id="tool-search"
+          type="search"
+          placeholder="Search tools… try “compress”"
+          aria-label="Search tools"
+          class="w-full rounded-2xl border border-line bg-surface py-[15px] pr-[18px] pl-[46px] text-base text-ink shadow-card outline-none focus:border-accent"
+        />
+      </div>
+    </section>
+
+    <!-- Tool sections -->
+    <section class="mx-auto max-w-[1120px] px-5 pt-2 pb-16">
+      <p id="no-results" hidden class="py-10 text-center text-base text-mute">
+        No tools found. Try “merge”, “compress”, “resize”…
+      </p>
+      {
+        homeSections.map((sec) => (
+          <div class="mt-10" data-section>
+            <h2 class="mb-1 font-serif text-[clamp(26px,4vw,34px)] font-normal tracking-[-0.01em]">{sec.title}</h2>
+            <p class="mb-5 text-sm text-mute">{sec.sub}</p>
+            {sec.groups.map((grp) => (
+              <div class="mb-[26px]" data-group>
+                <p class="mb-3 text-[11px] font-semibold tracking-[0.12em] text-mute uppercase">{grp.label}</p>
+                <div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr))">
+                  {grp.tools.map((t) => (
+                    <a
+                      href={`${base}${t.slug}/`}
+                      data-tool-card
+                      data-search={`${t.name} ${t.desc} ${t.category}`.toLowerCase()}
+                      class="flex items-start gap-3.5 rounded-2xl border border-line bg-surface p-[18px] text-ink no-underline shadow-card transition hover:-translate-y-0.5 hover:border-accent hover:shadow-card-lg"
+                    >
+                      <span class="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-soft text-accent">
+                        <Icon name={t.icon} />
+                      </span>
+                      <span class="flex min-w-0 flex-col gap-[3px]">
+                        <span class="text-[15px] font-semibold">{t.name}</span>
+                        <span class="text-[13px] leading-snug text-mute">{t.desc}</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- How it works -->
+    <section class="border-t border-line bg-surface">
+      <div class="mx-auto max-w-[1120px] px-5 py-14">
+        <h2 class="mb-1 text-center font-serif text-[clamp(26px,4vw,34px)] font-normal">How it works</h2>
+        <p class="mx-auto mb-8 max-w-[520px] text-center text-sm text-mute">Client-side processing, in plain language.</p>
+        <div class="grid gap-4 sm:grid-cols-3">
+          {
+            howItWorks.map((s, i) => (
+              <div class="rounded-2xl border border-line bg-bg p-5">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-bold text-accent-ink">{i + 1}</span>
+                <h3 class="mt-3 mb-1 text-[15px] font-semibold">{s.title}</h3>
+                <p class="m-0 text-[13.5px] leading-relaxed text-mute">{s.text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mx-auto max-w-[760px] px-5 py-14">
+      <h2 class="mb-6 text-center font-serif text-[clamp(26px,4vw,34px)] font-normal">Frequently asked questions</h2>
+      <div class="flex flex-col gap-3">
+        {
+          faqs.map((f) => (
+            <details class="rounded-2xl border border-line bg-surface px-5 py-4">
+              <summary class="cursor-pointer text-[15px] font-semibold">{f.q}</summary>
+              <p class="mt-2 mb-0 text-sm leading-relaxed text-mute">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </section>
   </main>
 </BaseLayout>
+
+<script>
+  // Live search: hide cards that don't match; collapse empty groups/sections.
+  const input = document.getElementById('tool-search') as HTMLInputElement;
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-tool-card]')];
+  const groups = [...document.querySelectorAll<HTMLElement>('[data-group]')];
+  const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
+  const noResults = document.getElementById('no-results')!;
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    for (const card of cards) {
+      card.hidden = !!q && !(card.dataset.search ?? '').includes(q);
+    }
+    for (const el of [...groups, ...sections]) {
+      el.hidden = ![...el.querySelectorAll<HTMLElement>('[data-tool-card]')].some((c) => !c.hidden);
+    }
+    noResults.hidden = cards.some((c) => !c.hidden);
+  });
+</script>

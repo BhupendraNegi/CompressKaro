@@ -1,0 +1,31 @@
+---
+/** Trust signals — large pills (home hero) or small dot-text row (tool pages). */
+interface Props {
+  variant?: 'large' | 'small';
+}
+
+const { variant = 'large' } = Astro.props;
+const chips = ['100% free', 'Processed in your browser', 'No signup', 'No file limits'];
+---
+
+{
+  variant === 'large' ? (
+    <div class="mt-6 flex flex-wrap justify-center gap-2">
+      {chips.map((c) => (
+        <span class="inline-flex items-center gap-[7px] rounded-full border border-line bg-surface px-3.5 py-[7px] text-[13px] font-medium text-ink">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent" />
+          {c}
+        </span>
+      ))}
+    </div>
+  ) : (
+    <div class="flex flex-wrap gap-3.5">
+      {chips.map((c) => (
+        <span class="inline-flex items-center gap-1.5 text-[12.5px] text-mute">
+          <span class="h-[5px] w-[5px] rounded-full bg-accent" />
+          {c}
+        </span>
+      ))}
+    </div>
+  )
+}

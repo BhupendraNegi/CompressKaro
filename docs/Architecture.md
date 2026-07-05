@@ -289,7 +289,7 @@ Resolved (see Progress.md decisions log for dates):
 
 1. **Astro over Next.js** — per spec; islands minimize per-page JS across ~30 pages.
 2. **GitHub Pages** primary deploy; Vercel remains a drop-in option.
-3. **Tool inventory = spec ∪ design prototype** (31 tools) — see Tool-Catalog.md for the diff.
+3. **Tool inventory = spec ∪ design prototype** (30 tools) — see Tool-Catalog.md for the diff.
 4. **Hinglish voice on by default** ("Merge Karo", "Ho gaya!") exactly as the design prototype;
    copy lives in one module so an English-only switch stays cheap.
 

@@ -25,7 +25,7 @@ Colima profile. *(Note: `bin/setup` becomes runnable once the Phase 0 scaffold l
 | [docs/specifications.md](docs/specifications.md) | Product spec (what we're building) |
 | [docs/Architecture.md](docs/Architecture.md) | Stack, repo structure, dev/CI/deploy, **phased build plan** |
 | [docs/Design-System.md](docs/Design-System.md) | Tokens, typography, components, Hinglish voice |
-| [docs/Tool-Catalog.md](docs/Tool-Catalog.md) | All 31 tools: slugs, options, outputs, phases |
+| [docs/Tool-Catalog.md](docs/Tool-Catalog.md) | All 30 tools: slugs, options, outputs, phases |
 | [docs/Progress.md](docs/Progress.md) | Decisions log + phase tracker |
 
 ## Deploy
