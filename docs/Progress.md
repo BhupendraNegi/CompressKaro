@@ -60,8 +60,8 @@ Verify gate:
 - [x] `bin/dev` serves `localhost:4321` from the container — HTTP 200, `<title>CompressKaro — Free PDF & Image tools</title>`
 - [x] `bin/test` green (3 tests) · `bin/lint` passes (eslint + `astro check`: 0 errors)
 - [x] `PAGES=true pnpm build` emits `dist/` with assets under `/CompressKaro/_astro/…`
-- [ ] `ci.yml` + Pages deploy green on GitHub — verify after first push to `origin/main`
-      (repo: `github.com/BhupendraNegi/CompressKaro`; enable Pages → Source: GitHub Actions)
+- [x] `ci.yml` + Pages deploy green on GitHub (2026-07-05) — live at
+      https://bhupendranegi.github.io/CompressKaro/
 
 ## Phase 1 — Design system & homepage ✅ (local gates 2026-07-05)
 
@@ -275,6 +275,22 @@ Path taken:
 - Global `:focus-visible` accent outline; error/status notices are `role="status"`;
   `prefers-reduced-motion` already in the base CSS.
 - e2e: wrong-type drop shows the notice without leaving the empty phase; ad slot visible.
+
+### CI stabilization (2026-07-05, post-first-push)
+
+First full CI run surfaced two real bugs, both fixed and verified (24/24 e2e in the Playwright
+container, then all three workflows green on GitHub):
+- **Dev-toolbar interference** — e2e ran against `pnpm dev`, whose Astro toolbar overlays every
+  page (own h1s/buttons) and broke strict-mode locators. E2E now tests the production build
+  (`pnpm build && pnpm preview`); toolbar disabled project-wide.
+- **pdfjs fake-worker failure** — inside the processing worker, pdfjs's environment sniffing
+  picked its same-thread "fake worker" mode and died with an *empty* error (blank error card),
+  breaking Compress PDF and PDF to Text in real browsers. Fixed by handing pdfjs a real nested
+  worker via Vite's `?worker` import (`GlobalWorkerOptions.workerPort`). Worker now also surfaces
+  unhandled rejections/uncaught errors as friendly messages instead of dying silently.
+
+**Live:** https://bhupendranegi.github.io/CompressKaro/ — CI, E2E, and Pages deploy all green
+on `main` (2026-07-05).
 
 Remaining (needs the deployed site):
 - [ ] Lighthouse ≥ 95 perf+SEO per page — measure on the live Pages URL, record here
