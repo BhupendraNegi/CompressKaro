@@ -7,6 +7,9 @@ import tailwindcss from '@tailwindcss/vite';
 // served from the /CompressKaro subpath there. Local dev stays path-free.
 export default defineConfig({
   output: 'static',
+  // The dev toolbar overlays the page (its own h1s, buttons) — it broke e2e
+  // and adds noise; disable it project-wide.
+  devToolbar: { enabled: false },
   site: 'https://bhupendranegi.github.io',
   base: process.env.PAGES ? '/CompressKaro' : '/',
   integrations: [react(), sitemap()],

@@ -27,12 +27,12 @@ test('theme toggle persists across reloads', async ({ page }) => {
   await expect(html).toHaveAttribute('data-theme', 'dark');
 });
 
-test('tool cards navigate to tool pages with coming-soon state', async ({ page }) => {
+test('tool cards navigate to live tool pages', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('link', { name: /Merge PDF/ }).first().click();
   await expect(page).toHaveURL(/merge-pdf/);
   await expect(page.locator('h1')).toHaveText('Merge PDF');
-  await expect(page.getByText('Ban raha hai…')).toBeVisible();
+  await expect(page.getByText('Drop your files here')).toBeVisible();
 });
 
 test('footer links every tool', async ({ page }) => {

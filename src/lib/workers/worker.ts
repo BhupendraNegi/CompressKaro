@@ -42,6 +42,16 @@ const processors: Record<string, () => Promise<{ process: ProcessFn }>> = {
 
 const reply = (msg: WorkerResponse) => self.postMessage(msg);
 
+// Failures inside library-internal async chains (e.g. pdfjs's nested-worker
+// setup) never reach the request try/catch — surface them instead of dying.
+self.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
+  const reason = e.reason as Error | undefined;
+  reply({ type: 'error', message: reason?.message || String(e.reason ?? 'Unhandled failure in processing') });
+});
+self.addEventListener('error', (e: ErrorEvent) => {
+  reply({ type: 'error', message: e.message || 'Unexpected failure in processing' });
+});
+
 self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
   const { slug, files, options } = e.data;
   try {
@@ -51,6 +61,7 @@ self.onmessage = async (e: MessageEvent<WorkerRequest>) => {
     const outputs = await process(files, options, (percent) => reply({ type: 'progress', percent }));
     reply({ type: 'done', outputs });
   } catch (err) {
-    reply({ type: 'error', message: err instanceof Error ? err.message : String(err) });
+    const message = err instanceof Error ? err.message || `${err.name}: ${err.stack?.split('\n')[1]?.trim() ?? 'no detail'}` : String(err);
+    reply({ type: 'error', message });
   }
 };

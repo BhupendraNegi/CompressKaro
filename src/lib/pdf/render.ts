@@ -1,8 +1,11 @@
 import * as pdfjs from 'pdfjs-dist';
+// Vite's ?worker import gives a ready Worker constructor — handing pdfjs a
+// real port avoids its own environment sniffing (which picks the flaky
+// same-thread "fake worker" mode inside a worker scope).
+import PdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?worker';
 import type { ProgressFn } from '../../tools/types';
 
-// pdfjs spawns its own (nested) worker; Vite bundles the asset URL.
-pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
+pdfjs.GlobalWorkerOptions.workerPort = new PdfjsWorker();
 
 export interface RenderedPage {
   bytes: Uint8Array;
