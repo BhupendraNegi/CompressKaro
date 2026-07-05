@@ -52,6 +52,17 @@ export function OptionsPanel({ options, values, onChange }: Props) {
               </div>
             )}
 
+            {opt.type === 'textarea' && (
+              <textarea
+                id={`opt-${opt.key}`}
+                value={String(values[opt.key] ?? '')}
+                placeholder={opt.placeholder}
+                rows={opt.rows ?? 10}
+                onChange={(e) => onChange(opt.key, e.target.value)}
+                className="w-full resize-y rounded-xl border border-line bg-bg px-3.5 py-[11px] font-mono text-sm leading-relaxed text-ink outline-none focus:border-accent"
+              />
+            )}
+
             {opt.type === 'text' && (
               <input
                 id={`opt-${opt.key}`}

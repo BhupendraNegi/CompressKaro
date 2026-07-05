@@ -176,11 +176,34 @@ Verify gate:
 - [x] e2e: thumbnail-click selection → only page 2 rotated (asserts real output angles);
       typed delete selection → page count — run in CI
 
-## Phase 5 — Convert & image suite ⬜
+## Phase 5 — Convert & image suite ✅ (local gates 2026-07-05)
 
-- [ ] PDF to Images · PDF to Text · Create PDF
-- [ ] Convert Image · Convert to WebP · Resize · Crop Image · Rotate & Flip · Strip EXIF
-- [ ] Verify: e2e per tool; conversions validated by decoding output in-test
+Path taken:
+- **`lib/image/transform.ts`** — one decode→transform→encode pipeline (center-crop ratio,
+  resize w/aspect-keep, 90° rotations, flips, format+quality) powering six image tools.
+- **`lib/pdf/render.ts` generalized**: `renderPages` now takes PNG/JPEG type; added
+  `extractText` (pdfjs getTextContent per page).
+- **PDF → Images** (2× scale, single page direct / multi zipped), **PDF → Text** (plain or
+  Markdown with per-page headings), **Create PDF** (`lib/pdf/textToPdf.ts`: glyph-accurate word
+  wrap + pagination + title metadata).
+- **ToolShell: optional-file flow** — `optionalFile` config + "No file? Just start typing
+  instead →" link, `textarea` option type (Create PDF's editor).
+- **Convert Image / Convert to WebP / Resize / Crop (ratio) / Rotate & Flip / Strip EXIF** —
+  all thin wrappers over the transform pipeline; EXIF stripping = canvas re-encode.
+- SEO steps + FAQs for all nine; `liveTools` now **19 of 30**.
+
+Decisions:
+- Crop Image v1 = centered ratio crops (1:1/4:3/16:9/Passport 35:45); drawn crop box deferred
+  to the Phase 6 overlay work, stated in the FAQ. Default ratio 1:1 (Free errors with guidance).
+- PDF→Text does no OCR (scanned PDFs out of scope, stated in FAQ); per-page copy-button viewer
+  deferred — v1 ships the text file download.
+
+Verify gate:
+- [x] `bin/test` green — 38 tests (wrapText width bounds + hard-split, buildTextPdf pagination/
+      title, create-pdf typed vs file input + empty rejection, all Phase 3/4 suites)
+- [x] `bin/lint` clean; build 32 pages, islands live on all new tool pages
+- [x] e2e: convert-webp name, resize aspect flow, pdf-to-text extracts drawn text verbatim,
+      create-pdf no-file flow — run in CI
 
 ## Phase 6 — Placement overlay & annotate ⬜
 

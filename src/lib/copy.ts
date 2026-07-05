@@ -7,6 +7,7 @@ export const copy = {
   dropTitleSingle: 'Drop your file here',
   browseHint: 'or tap to browse',
   addMore: '+ Add more',
+  skipFile: 'No file? Just start typing instead →',
   reorderHint: 'Drag to reorder — files merge top to bottom.',
   optionsLabel: 'Options',
   actionSuffix: 'Karo',

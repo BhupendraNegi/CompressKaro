@@ -167,12 +167,56 @@ export const tools: ToolConfig[] = [
       { q: 'Do my photos get uploaded?', a: 'Never — the PDF is assembled entirely in your browser.' },
     ],
   },
-  tool({ slug: 'pdf-to-images', name: 'PDF to Images', desc: 'Export every page as PNG or JPG', category: 'convert', icon: 'img', verb: 'Convert',
-    options: [choice('fmt', 'Format', ['PNG', 'JPG']), slider('q', 'Quality', 10, 100, 90, '%')] }),
-  tool({ slug: 'pdf-to-text', name: 'PDF to Text', desc: 'Extract all text from a PDF', category: 'convert', icon: 'text', verb: 'Extract',
-    options: [choice('fmt', 'Output', ['Plain text', 'Markdown'])] }),
-  tool({ slug: 'create-pdf', name: 'Create PDF', desc: 'Write text and save it as a PDF', category: 'convert', icon: 'create', verb: 'Create', accept: '.txt,.md',
-    options: [txt('title', 'Document title', 'Untitled document'), choice('size', 'Page size', ['A4', 'Letter'])] }),
+  {
+    ...tool({ slug: 'pdf-to-images', name: 'PDF to Images', desc: 'Export every page as PNG or JPG', category: 'convert', icon: 'img', verb: 'Convert',
+      options: [choice('fmt', 'Format', ['PNG', 'JPG']), slider('q', 'Quality', 10, 100, 90, '%', 'Quality applies to JPG output.')] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Pick PNG (sharp, larger) or JPG (smaller) and a quality level.',
+      'Hit “Convert Karo” — every page is rendered on your device.',
+      'Download one image, or a zip when there are multiple pages.',
+    ],
+    faqs: [
+      { q: 'What resolution are the images?', a: 'Pages render at 2× their PDF size — crisp enough for screens and most documents.' },
+      { q: 'PNG or JPG — which should I pick?', a: 'PNG for text-heavy pages and diagrams (lossless), JPG for photo-heavy pages (much smaller files).' },
+      { q: 'Is my PDF uploaded to convert it?', a: 'No — rendering happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'pdf-to-text', name: 'PDF to Text', desc: 'Extract all text from a PDF', category: 'convert', icon: 'text', verb: 'Extract',
+      options: [choice('fmt', 'Output', ['Plain text', 'Markdown'])] }),
+    steps: [
+      'Drop your PDF into the box above.',
+      'Choose plain text, or Markdown with a heading per page.',
+      'Hit “Extract Karo”.',
+      'Download the text file.',
+    ],
+    faqs: [
+      { q: 'Does this work on scanned PDFs?', a: 'No — scanned pages are images with no text layer, and this tool doesn’t do OCR (yet). It extracts the real text a PDF contains.' },
+      { q: 'Will the layout be preserved?', a: 'Text comes out in reading order per page, but columns and tables flatten into plain text.' },
+      { q: 'Is my document uploaded?', a: 'No — extraction happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'create-pdf', name: 'Create PDF', desc: 'Write text and save it as a PDF', category: 'convert', icon: 'create', verb: 'Create', accept: '.txt,.md',
+      options: [
+        { type: 'textarea', key: 'content', label: 'Your text', placeholder: 'Type or paste your text here…', rows: 12 },
+        txt('title', 'Document title', 'Untitled document'),
+        choice('size', 'Page size', ['A4', 'Letter']),
+      ] }),
+    optionalFile: true,
+    steps: [
+      'Type or paste your text — or drop in a .txt / .md file.',
+      'Give the document a title and pick a page size.',
+      'Hit “Create Karo”.',
+      'Download a clean, paginated PDF.',
+    ],
+    faqs: [
+      { q: 'Do I need to upload a file?', a: 'No — just start typing. You can also drop in an existing .txt or .md file to convert it.' },
+      { q: 'How is the text formatted?', a: 'Clean Helvetica at 12pt with generous margins, word-wrapped and split into pages automatically.' },
+      { q: 'Is my text sent anywhere?', a: 'No — the PDF is generated entirely in your browser.' },
+    ],
+  },
 
   // ── PDF · Optimize & Security ──────────────────────────────────────────────
   {
@@ -227,17 +271,65 @@ export const tools: ToolConfig[] = [
       { q: 'Can I compress many images at once?', a: 'Yes — drop in multiple images and each one is compressed with the same settings.' },
     ],
   },
-  tool({ slug: 'resize-image', name: 'Resize Image', desc: 'Scale to exact pixel dimensions', category: 'image', icon: 'resize', verb: 'Resize', accept: 'image/*',
-    options: [num('w', 'Width', 'e.g. 1200', 'px'), num('h', 'Height', 'auto', 'px', 'Leave blank to keep aspect ratio.')] }),
-  tool({ slug: 'convert-image', name: 'Convert Image', desc: 'Switch between JPG, PNG and WebP', category: 'image', icon: 'convert', verb: 'Convert', multi: true, accept: 'image/*',
-    options: [choice('fmt', 'Convert to', ['JPG', 'PNG', 'WebP'])] }),
-  tool({ slug: 'convert-webp', name: 'Convert to WebP', desc: 'Modern format, much smaller files', category: 'image', icon: 'convert', verb: 'Convert', multi: true, accept: 'image/*',
-    options: [slider('q', 'Quality', 10, 100, 80, '%')] }),
-  tool({ slug: 'crop-image', name: 'Crop Image', desc: 'Crop free-form or to a ratio', category: 'image', icon: 'crop', verb: 'Crop', accept: 'image/*',
-    options: [choice('ratio', 'Aspect ratio', ['Free', '1:1', '4:3', '16:9', 'Passport'])] }),
-  tool({ slug: 'rotate-flip-image', name: 'Rotate & Flip', desc: 'Rotate or mirror any image', category: 'image', icon: 'flip', verb: 'Apply', accept: 'image/*',
-    options: [choice('rot', 'Rotate', ['None', '90° right', '180°', '90° left']), choice('flip', 'Flip', ['None', 'Horizontal', 'Vertical'])] }),
-  tool({ slug: 'strip-exif', name: 'Strip EXIF Data', desc: 'Remove metadata & location info', category: 'image', icon: 'exif', verb: 'Clean', multi: true, accept: 'image/*' }),
+  {
+    ...tool({ slug: 'resize-image', name: 'Resize Image', desc: 'Scale to exact pixel dimensions', category: 'image', icon: 'resize', verb: 'Resize', accept: 'image/*',
+      options: [num('w', 'Width', 'e.g. 1200', 'px'), num('h', 'Height', 'auto', 'px', 'Leave blank to keep aspect ratio.')] }),
+    steps: ['Drop your image into the box above.', 'Enter a width, a height, or both in pixels.', 'Hit “Resize Karo” and download.'],
+    faqs: [
+      { q: 'How do I keep the aspect ratio?', a: 'Fill in just one dimension — the other is calculated automatically.' },
+      { q: 'Does resizing reduce quality?', a: 'Scaling down keeps images sharp. Scaling up can’t invent detail, so large upscales may look soft.' },
+      { q: 'Is my image uploaded?', a: 'No — resizing happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'convert-image', name: 'Convert Image', desc: 'Switch between JPG, PNG and WebP', category: 'image', icon: 'convert', verb: 'Convert', multi: true, accept: 'image/*',
+      options: [choice('fmt', 'Convert to', ['JPG', 'PNG', 'WebP'])] }),
+    steps: ['Drop one or more images into the box above.', 'Pick the output format: JPG, PNG or WebP.', 'Hit “Convert Karo” and download each converted file.'],
+    faqs: [
+      { q: 'Which format should I choose?', a: 'JPG for photos, PNG when you need transparency or pixel-perfect graphics, WebP for the smallest files with great quality.' },
+      { q: 'What happens to transparency in JPG?', a: 'JPG has no transparency — transparent areas are flattened onto white.' },
+      { q: 'Are my images uploaded to convert them?', a: 'No — conversion happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'convert-webp', name: 'Convert to WebP', desc: 'Modern format, much smaller files', category: 'image', icon: 'convert', verb: 'Convert', multi: true, accept: 'image/*',
+      options: [slider('q', 'Quality', 10, 100, 80, '%')] }),
+    steps: ['Drop one or more JPG or PNG images into the box above.', 'Pick a quality — 80% is a great default.', 'Hit “Convert Karo” and download your WebP files.'],
+    faqs: [
+      { q: 'Why WebP?', a: 'WebP files are typically 25–35% smaller than JPG at the same visual quality, and every modern browser supports them.' },
+      { q: 'Does WebP support transparency?', a: 'Yes — PNG transparency survives the conversion.' },
+      { q: 'Is my image uploaded to convert it?', a: 'No — conversion happens entirely in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'crop-image', name: 'Crop Image', desc: 'Crop to a fixed ratio', category: 'image', icon: 'crop', verb: 'Crop', accept: 'image/*',
+      options: [choice('ratio', 'Aspect ratio', ['1:1', '4:3', '16:9', 'Passport', 'Free'], 'Crops are centered. Free-form drawing is coming soon.')] }),
+    steps: ['Drop your image into the box above.', 'Pick a ratio — square, 4:3, 16:9 or passport (35×45).', 'Hit “Crop Karo” and download the centered crop.'],
+    faqs: [
+      { q: 'Where is the crop taken from?', a: 'From the center of the image — the largest possible area at your chosen ratio.' },
+      { q: 'What is the Passport ratio?', a: '35:45 — the standard passport/visa photo proportion used in most countries.' },
+      { q: 'Can I drag my own crop box?', a: 'Not yet — a draw-your-own crop box is on the roadmap. Ratio crops are centered for now.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'rotate-flip-image', name: 'Rotate & Flip', desc: 'Rotate or mirror any image', category: 'image', icon: 'flip', verb: 'Apply', accept: 'image/*',
+      options: [choice('rot', 'Rotate', ['None', '90° right', '180°', '90° left']), choice('flip', 'Flip', ['None', 'Horizontal', 'Vertical'])] }),
+    steps: ['Drop your image into the box above.', 'Pick a rotation, a flip, or both.', 'Hit “Apply Karo” and download.'],
+    faqs: [
+      { q: 'Can I rotate and flip at once?', a: 'Yes — the rotation is applied first, then the mirror.' },
+      { q: 'Is the quality affected?', a: 'Rotation by 90° steps and flips are lossless operations on the pixels; only the final re-encode applies (at high quality).' },
+      { q: 'Is my image uploaded?', a: 'No — everything happens in your browser.' },
+    ],
+  },
+  {
+    ...tool({ slug: 'strip-exif', name: 'Strip EXIF Data', desc: 'Remove metadata & location info', category: 'image', icon: 'exif', verb: 'Clean', multi: true, accept: 'image/*' }),
+    steps: ['Drop one or more photos into the box above.', 'Hit “Clean Karo” — no options needed.', 'Download copies with all metadata removed.'],
+    faqs: [
+      { q: 'What gets removed?', a: 'Everything that isn’t pixels: GPS location, camera model, timestamps, software tags — the whole EXIF block.' },
+      { q: 'Why should I strip EXIF before sharing?', a: 'Photos can silently carry your home location and daily patterns. Stripping metadata before posting keeps that private.' },
+      { q: 'How does it work without uploading?', a: 'The photo is re-drawn onto a clean canvas in your browser — pixels survive, metadata doesn’t. Nothing is sent anywhere.' },
+    ],
+  },
   tool({ slug: 'watermark-image', name: 'Image Watermark', desc: 'Stamp text or a logo on photos', category: 'image', icon: 'watermark', verb: 'Watermark', multi: true, accept: 'image/*',
     options: [txt('wm', 'Watermark text', 'e.g. © Your Name'), slider('op', 'Opacity', 5, 100, 40, '%'), choice('pos', 'Position', ['Bottom right', 'Center', 'Tile'])] }),
   tool({ slug: 'favicon-generator', name: 'Favicon Generator', desc: 'One image → every favicon size', category: 'image', icon: 'img', verb: 'Generate', accept: 'image/*' }),
@@ -258,6 +350,15 @@ export const liveTools = new Set<string>([
   'delete-pdf',
   'extract-pdf',
   'crop-pdf',
+  'pdf-to-images',
+  'pdf-to-text',
+  'create-pdf',
+  'convert-image',
+  'convert-webp',
+  'resize-image',
+  'crop-image',
+  'rotate-flip-image',
+  'strip-exif',
 ]);
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);

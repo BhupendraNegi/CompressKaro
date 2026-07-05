@@ -10,6 +10,7 @@ export type ToolOption =
   | { type: 'slider'; key: string; label: string; min: number; max: number; step: number; def: number; unit?: string; hint?: string; labels?: string[] }
   | { type: 'number'; key: string; label: string; placeholder?: string; unit?: string; def?: number; hint?: string }
   | { type: 'text'; key: string; label: string; placeholder?: string; def?: string; hint?: string; inputType?: 'text' | 'password' }
+  | { type: 'textarea'; key: string; label: string; placeholder?: string; def?: string; hint?: string; rows?: number }
   | { type: 'choice'; key: string; label: string; choices: string[]; def?: string; hint?: string };
 
 export interface Faq {
@@ -34,6 +35,8 @@ export interface ToolConfig {
   multi: boolean;
   /** Max file count for multi tools (spec: merge caps at 25) */
   maxFiles?: number;
+  /** Tool can run without any file (e.g. Create PDF's text editor) */
+  optionalFile?: boolean;
   /** Verb for the Hinglish action button: "{verb} Karo →" */
   verb: string;
   options: ToolOption[];

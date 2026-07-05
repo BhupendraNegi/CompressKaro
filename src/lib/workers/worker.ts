@@ -18,6 +18,15 @@ const processors: Record<string, () => Promise<{ process: ProcessFn }>> = {
   'delete-pdf': () => import('../../tools/delete-pdf/process'),
   'extract-pdf': () => import('../../tools/extract-pdf/process'),
   'crop-pdf': () => import('../../tools/crop-pdf/process'),
+  'pdf-to-images': () => import('../../tools/pdf-to-images/process'),
+  'pdf-to-text': () => import('../../tools/pdf-to-text/process'),
+  'create-pdf': () => import('../../tools/create-pdf/process'),
+  'convert-image': () => import('../../tools/convert-image/process'),
+  'convert-webp': () => import('../../tools/convert-webp/process'),
+  'resize-image': () => import('../../tools/resize-image/process'),
+  'crop-image': () => import('../../tools/crop-image/process'),
+  'rotate-flip-image': () => import('../../tools/rotate-flip-image/process'),
+  'strip-exif': () => import('../../tools/strip-exif/process'),
 };
 
 const reply = (msg: WorkerResponse) => self.postMessage(msg);

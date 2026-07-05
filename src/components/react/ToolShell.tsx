@@ -125,22 +125,36 @@ export function ToolShell({ config }: Props) {
           <p className="mt-1.5 mb-0 text-sm text-mute">
             {copy.browseHint} · {acceptHint(config.accept)}
           </p>
+          {config.optionalFile && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setPhase('ready');
+              }}
+              className="mt-[18px] inline-block cursor-pointer border-none bg-transparent text-[13.5px] font-medium text-accent underline underline-offset-[3px]"
+            >
+              {copy.skipFile}
+            </button>
+          )}
         </div>
       )}
 
       {phase === 'ready' && (
         <div className="mt-1.5 flex flex-col gap-4" style={{ animation: 'ck-rise 0.25s ease' }}>
-          <FileList
-            files={files}
-            multi={config.multi}
-            onReorder={setFiles}
-            onRemove={(i) => {
-              const next = files.filter((_, idx) => idx !== i);
-              setFiles(next);
-              if (!next.length) setPhase('empty');
-            }}
-            onAddMore={openPicker}
-          />
+          {files.length > 0 && (
+            <FileList
+              files={files}
+              multi={config.multi}
+              onReorder={setFiles}
+              onRemove={(i) => {
+                const next = files.filter((_, idx) => idx !== i);
+                setFiles(next);
+                if (!next.length) setPhase('empty');
+              }}
+              onAddMore={openPicker}
+            />
+          )}
           {(() => {
             const panel = toolPanels[config.slug];
             if (!panel || !files[0]) return null;

@@ -1,5 +1,5 @@
 import { PDFDocument } from 'pdf-lib';
-import { renderPagesToJpeg } from '../../lib/pdf/render';
+import { renderPages } from '../../lib/pdf/render';
 import { baseName } from '../../lib/files';
 import type { ProcessFn } from '../types';
 
@@ -10,10 +10,10 @@ const LEVELS: Record<number, { scale: number; quality: number }> = {
 };
 
 async function rebuild(data: ArrayBuffer, scale: number, quality: number, onProgress: (p: number) => void): Promise<Uint8Array> {
-  const pages = await renderPagesToJpeg(data, { scale, quality }, (p) => onProgress(Math.round(p * 0.85)));
+  const pages = await renderPages(data, { scale, quality }, (p) => onProgress(Math.round(p * 0.85)));
   const doc = await PDFDocument.create();
   for (const page of pages) {
-    const img = await doc.embedJpg(page.jpeg);
+    const img = await doc.embedJpg(page.bytes);
     doc.addPage([page.widthPt, page.heightPt]).drawImage(img, { x: 0, y: 0, width: page.widthPt, height: page.heightPt });
   }
   onProgress(95);
