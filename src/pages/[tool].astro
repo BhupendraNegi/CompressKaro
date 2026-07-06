@@ -5,6 +5,7 @@ import TrustChips from '../components/astro/TrustChips.astro';
 import AdSlot from '../components/astro/AdSlot.astro';
 import { ToolShell } from '../components/react/ToolShell';
 import { liveTools, tools } from '../tools/registry';
+import { base } from '../lib/paths';
 import type { ToolConfig } from '../tools/types';
 
 export function getStaticPaths() {
@@ -16,7 +17,6 @@ interface Props {
 }
 
 const { tool } = Astro.props;
-import { base } from '../lib/paths';
 const isLive = liveTools.has(tool.slug);
 
 const faqJsonLd =
@@ -37,7 +37,7 @@ const faqJsonLd =
   {faqJsonLd && <script type="application/ld+json" set:html={faqJsonLd} slot="head" />}
 
   <main>
-    <section class="mx-auto max-w-[920px] px-5 pt-7 pb-12">
+    <section class="mx-auto max-w-[1200px] px-5 pt-7 pb-12">
       <a href={base} class="inline-flex items-center gap-1.5 text-sm font-medium text-mute no-underline hover:text-accent">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-[15px] w-[15px]" aria-hidden="true">
           <polyline points="14 6 8 12 14 18"></polyline>
@@ -45,72 +45,78 @@ const faqJsonLd =
         All tools
       </a>
 
-      <div class="mt-5 flex items-center gap-4">
-        <span class="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-2xl bg-accent-soft text-accent">
-          <Icon name={tool.icon} size={26} />
-        </span>
-        <div>
-          <h1 class="m-0 font-serif text-[clamp(28px,5vw,38px)] leading-[1.1] font-normal tracking-[-0.01em]">{tool.name}</h1>
-          <p class="mt-1 mb-0 text-[15px] text-mute">{tool.desc}</p>
+      <div class="mt-5 flex flex-wrap items-end justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <span class="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-2xl bg-accent-soft text-accent">
+            <Icon name={tool.icon} size={26} />
+          </span>
+          <div>
+            <h1 class="m-0 font-serif text-[clamp(28px,5vw,38px)] leading-[1.1] font-normal tracking-[-0.01em]">{tool.name}</h1>
+            <p class="mt-1 mb-0 text-[15px] text-mute">{tool.desc}</p>
+          </div>
         </div>
-      </div>
-
-      <div class="mt-[18px] mb-3.5">
         <TrustChips variant="small" />
       </div>
 
-      {
-        isLive ? (
-          <ToolShell client:load config={tool} />
-        ) : (
-          <div class="mt-1.5 rounded-[20px] border-2 border-dashed border-line bg-surface px-6 py-14 text-center">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] bg-accent-soft text-accent">
-              <Icon name={tool.icon} size={28} />
-            </div>
-            <p class="mt-5 mb-0 font-serif text-2xl italic text-accent">Ban raha hai…</p>
-            <p class="mx-auto mt-2 mb-0 max-w-[400px] text-sm text-mute">
-              This tool is coming soon — we're building it right now. Everything will run privately in your browser, like every CompressKaro tool.
-            </p>
-            <a href={base} class="mt-[18px] inline-block text-[13.5px] font-medium text-accent underline underline-offset-[3px]">
-              Browse the tools that are live →
-            </a>
-          </div>
-        )
-      }
+      <div class="mt-6 gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+        <div class="min-w-0">
+          {
+            isLive ? (
+              <ToolShell client:load config={tool} />
+            ) : (
+              <div class="mt-1.5 rounded-[20px] border-2 border-dashed border-line bg-surface px-6 py-14 text-center">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] bg-accent-soft text-accent">
+                  <Icon name={tool.icon} size={28} />
+                </div>
+                <p class="mt-5 mb-0 font-serif text-2xl italic text-accent">Ban raha hai…</p>
+                <p class="mx-auto mt-2 mb-0 max-w-[400px] text-sm text-mute">
+                  This tool is coming soon — we're building it right now. Everything will run privately in your browser, like every CompressKaro tool.
+                </p>
+                <a href={base} class="mt-[18px] inline-block text-[13.5px] font-medium text-accent underline underline-offset-[3px]">
+                  Browse the tools that are live →
+                </a>
+              </div>
+            )
+          }
 
-      <AdSlot />
+          <AdSlot />
 
-      {
-        tool.steps.length > 0 && (
-          <section class="mt-10">
-            <h2 class="mb-4 font-serif text-2xl font-normal">How to use {tool.name}</h2>
-            <ol class="m-0 flex list-none flex-col gap-3 p-0">
-              {tool.steps.map((s, i) => (
-                <li class="flex items-start gap-3">
-                  <span class="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-[7px] bg-accent text-xs font-bold text-accent-ink">{i + 1}</span>
-                  <p class="m-0 text-[14.5px] leading-relaxed text-ink">{s}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
-        )
-      }
+          {
+            tool.faqs.length > 0 && (
+              <section class="mt-10">
+                <h2 class="mb-4 font-serif text-2xl font-normal">FAQs</h2>
+                <div class="flex flex-col gap-3">
+                  {tool.faqs.map((f) => (
+                    <details class="rounded-2xl border border-line bg-surface px-5 py-4 transition-colors hover:border-accent">
+                      <summary class="cursor-pointer text-[15px] font-semibold">{f.q}</summary>
+                      <p class="mt-2 mb-0 text-sm leading-relaxed text-mute">{f.a}</p>
+                    </details>
+                  ))}
+                </div>
+              </section>
+            )
+          }
+        </div>
 
-      {
-        tool.faqs.length > 0 && (
-          <section class="mt-10">
-            <h2 class="mb-4 font-serif text-2xl font-normal">FAQs</h2>
-            <div class="flex flex-col gap-3">
-              {tool.faqs.map((f) => (
-                <details class="rounded-2xl border border-line bg-surface px-5 py-4">
-                  <summary class="cursor-pointer text-[15px] font-semibold">{f.q}</summary>
-                  <p class="mt-2 mb-0 text-sm leading-relaxed text-mute">{f.a}</p>
-                </details>
-              ))}
-            </div>
-          </section>
-        )
-      }
+        {
+          tool.steps.length > 0 && (
+            <aside class="mt-10 rounded-[20px] border border-line bg-surface p-6 shadow-card lg:sticky lg:top-20 lg:mt-1.5">
+              <h2 class="mt-0 mb-4 font-serif text-xl font-normal">How to use {tool.name}</h2>
+              <ol class="m-0 flex list-none flex-col gap-3.5 p-0">
+                {tool.steps.map((s, i) => (
+                  <li class="flex items-start gap-3">
+                    <span class="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-[7px] bg-accent text-xs font-bold text-accent-ink">{i + 1}</span>
+                    <p class="m-0 text-[14px] leading-relaxed text-ink">{s}</p>
+                  </li>
+                ))}
+              </ol>
+              <p class="mt-5 mb-0 border-t border-line pt-4 text-[12.5px] leading-relaxed text-mute">
+                Everything happens on your device — close the tab and nothing is left behind.
+              </p>
+            </aside>
+          )
+        }
+      </div>
     </section>
   </main>
 </BaseLayout>

@@ -1,36 +1,41 @@
 ---
 import { footerColumns } from '../../tools/registry';
 import { base } from '../../lib/paths';
+import TrustChips from './TrustChips.astro';
 ---
 
 <footer class="border-t border-line bg-surface">
-  <div class="mx-auto max-w-[1320px] px-5 pt-10 pb-7">
-    <div class="grid gap-x-5 gap-y-7" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))">
-      <div class="col-span-full max-w-[280px]">
-        <p class="m-0 text-[17px] font-bold">
-          Compress<span class="font-serif text-lg font-normal italic text-accent">Karo</span>
+  <div class="mx-auto max-w-[1440px] px-5 pt-12 pb-7">
+    <div class="flex flex-col gap-10 lg:flex-row lg:gap-16">
+      <div class="lg:w-[280px] lg:flex-none">
+        <p class="m-0 text-[19px] font-bold">
+          Compress<span class="font-serif text-[20px] font-normal italic text-accent">Karo</span>
         </p>
-        <p class="mt-2 mb-0 text-[13px] leading-normal text-mute">
+        <p class="mt-2 mb-4 text-[13px] leading-relaxed text-mute">
           Free PDF &amp; image tools, forever. Everything runs in your browser — zero uploads, zero tracking.
         </p>
+        <TrustChips variant="small" />
       </div>
-      {
-        footerColumns.map((col) => (
-          <nav aria-label={col.title}>
-            <p class="mb-2.5 text-xs font-semibold tracking-[0.1em] text-mute uppercase">{col.title}</p>
-            <div class="flex flex-col gap-[7px]">
-              {col.tools.map((t) => (
-                <a href={`${base}${t.slug}/`} class="text-[13.5px] text-ink no-underline hover:text-accent">
-                  {t.name}
-                </a>
-              ))}
-            </div>
-          </nav>
-        ))
-      }
+      <div class="grid flex-1 grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
+        {
+          footerColumns.map((col) => (
+            <nav aria-label={col.title}>
+              <p class="mb-2.5 text-xs font-semibold tracking-[0.1em] text-mute uppercase">{col.title}</p>
+              <div class="flex flex-col gap-[7px]">
+                {col.tools.map((t) => (
+                  <a href={`${base}${t.slug}/`} class="text-[13.5px] text-ink no-underline transition-colors hover:text-accent">
+                    {t.name}
+                  </a>
+                ))}
+              </div>
+            </nav>
+          ))
+        }
+      </div>
     </div>
-    <p class="mt-8 border-t border-line pt-4 text-[12.5px] text-mute">
-      © 2026 CompressKaro — all processing happens locally in your browser. We never see your files. · No registration · No upload · 100% private
-    </p>
+    <div class="mt-10 flex flex-col gap-1.5 border-t border-line pt-5 text-[12.5px] text-mute sm:flex-row sm:items-center sm:justify-between">
+      <p class="m-0">© 2026 CompressKaro — all processing happens locally in your browser. We never see your files.</p>
+      <p class="m-0">No registration · No upload · 100% private</p>
+    </div>
   </div>
 </footer>
