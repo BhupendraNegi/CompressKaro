@@ -1,33 +1,46 @@
 ---
+import { Moon, Sun } from 'lucide-react';
 import { base } from '../../lib/paths';
 ---
 
 <header class="sticky top-0 z-50 border-b border-line backdrop-blur-md" style="background: color-mix(in oklab, var(--bg) 88%, transparent)">
-  <div class="mx-auto flex h-[60px] max-w-[1120px] items-center justify-between gap-3 px-5">
+  <div class="mx-auto flex h-[60px] max-w-[1320px] items-center justify-between gap-3 px-5">
     <a href={base} class="flex items-baseline gap-0.5 text-ink no-underline">
       <span class="text-xl font-bold tracking-tight">Compress</span><span class="font-serif text-[22px] italic text-accent">Karo</span>
     </a>
     <button
       id="theme-toggle"
       type="button"
-      class="flex cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-[7px] text-[13px] font-medium text-ink hover:border-accent"
+      class="group flex cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-[7px] text-[13px] font-medium text-ink transition-colors hover:border-accent"
       aria-label="Switch theme"
     >
-      <span id="theme-dot" class="h-2 w-2 rounded-full"></span>
+      <span class="theme-icon-moon flex text-accent transition-transform duration-300 group-hover:-rotate-25">
+        <Moon size={14} strokeWidth={2.2} aria-hidden="true" />
+      </span>
+      <span class="theme-icon-sun flex text-accent transition-transform duration-300 group-hover:rotate-45">
+        <Sun size={14} strokeWidth={2.2} aria-hidden="true" />
+      </span>
       <span id="theme-label"></span>
     </button>
   </div>
 </header>
 
+<style>
+  /* Show the icon of the theme you'd switch TO (matches the label). */
+  html[data-theme='dark'] .theme-icon-moon {
+    display: none;
+  }
+  html:not([data-theme='dark']) .theme-icon-sun {
+    display: none;
+  }
+</style>
+
 <script>
   const root = document.documentElement;
   const label = document.getElementById('theme-label')!;
-  const dot = document.getElementById('theme-dot')!;
 
   const paint = () => {
-    const dark = root.getAttribute('data-theme') === 'dark';
-    label.textContent = dark ? 'Light' : 'Dark';
-    dot.style.background = dark ? '#f6d87c' : '#1d1a17';
+    label.textContent = root.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark';
   };
   paint();
 

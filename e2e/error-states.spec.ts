@@ -2,6 +2,9 @@ import { expect, test } from '@playwright/test';
 
 test('dropping a wrong file type shows a friendly notice, not a crash', async ({ page }) => {
   await page.goto('/merge-pdf/');
+  // Astro drops the ssr attribute once the island hydrates — only then do the
+  // React drop listeners exist.
+  await page.waitForSelector('astro-island:not([ssr])');
   // Drag-and-drop bypasses the input accept filter — simulate via DataTransfer.
   await page.evaluate(() => {
     const dt = new DataTransfer();

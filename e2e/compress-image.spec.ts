@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test';
 import { statSync } from 'node:fs';
+import { waitForIsland } from './helpers';
 
 /** Draw noisy content on a canvas in-page and feed it to the file input. */
 async function addGeneratedPhoto(page: import('@playwright/test').Page) {
+  await waitForIsland(page);
   await page.evaluate(async () => {
     const canvas = document.createElement('canvas');
     canvas.width = 1600;

@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
+import { waitForIsland } from './helpers';
 
 async function addGeneratedImage(page: Page, name: string, size = 512) {
+  await waitForIsland(page);
   await page.evaluate(
     async ({ fileName, px }) => {
       const canvas = document.createElement('canvas');

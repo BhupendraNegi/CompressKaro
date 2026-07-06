@@ -57,6 +57,7 @@ test('reorder-pdf renders thumbnails and applies a typed order', async ({ page }
 
 test('images-to-pdf combines two generated images', async ({ page }) => {
   await page.goto('/images-to-pdf/');
+  await page.waitForSelector('astro-island:not([ssr])');
   await page.evaluate(async () => {
     const makeFile = async (name: string): Promise<File> => {
       const canvas = document.createElement('canvas');

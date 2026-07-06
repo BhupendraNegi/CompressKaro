@@ -1,8 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import { PDFDocument } from 'pdf-lib';
 import { readFile } from 'node:fs/promises';
+import { waitForIsland } from './helpers';
 
 async function addGeneratedImage(page: Page, name: string) {
+  await waitForIsland(page);
   await page.evaluate(async (fileName) => {
     const canvas = document.createElement('canvas');
     canvas.width = 800;
